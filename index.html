@@ -114,6 +114,31 @@
     }
     .btn-outline:hover { border-color: var(--accent2); color: var(--accent2); }
 
+    /* TECH STACK */
+    .techstack-section {
+      position: relative; z-index: 1;
+      padding: 48px 6vw;
+      border-top: 1px solid rgba(255,255,255,.06);
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      text-align: center;
+    }
+    .techstack-label {
+      font-size: .75rem; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 32px;
+    }
+    .techstack-grid {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; align-items: center;
+      gap: 40px 56px;
+    }
+    .tech-item {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      opacity: .55; transition: opacity .25s, transform .25s;
+    }
+    .tech-item:hover { opacity: 1; transform: translateY(-4px); }
+    .tech-item img { width: 48px; height: 48px; object-fit: contain; }
+    .tech-item span { font-size: .78rem; color: var(--muted); font-weight: 500; }
+
     /* ABOUT */
     #about {
       position: relative; overflow: hidden;
@@ -386,6 +411,45 @@
     <div class="hero-cta">
       <a href="#portfolio" class="btn btn-primary">View My Projects</a>
       <a href="#contact" class="btn btn-outline">Get In Touch</a>
+    </div>
+  </div>
+</div>
+
+<!-- TECH STACK LOGOS -->
+<div class="techstack-section">
+  <div class="techstack-label">Tech Stack</div>
+  <div class="techstack-grid">
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python">
+      <span>Python</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="SQL">
+      <span>SQL</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/pandas/pandas-original.svg" alt="Pandas">
+      <span>Pandas</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/numpy/numpy-original.svg" alt="NumPy">
+      <span>NumPy</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/scikitlearn/scikitlearn-original.svg" alt="Scikit-learn">
+      <span>Scikit-learn</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/matlab/matlab-original.svg" alt="MATLAB">
+      <span>MATLAB</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" style="filter:invert(1)">
+      <span>GitHub</span>
+    </div>
+    <div class="tech-item">
+      <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code">
+      <span>VS Code</span>
     </div>
   </div>
 </div>
