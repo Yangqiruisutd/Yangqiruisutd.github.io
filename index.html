@@ -26,49 +26,11 @@
     }
     a { color: inherit; text-decoration: none; }
 
-    #bg-container {
+    #bg-canvas {
       position: fixed; inset: 0;
       z-index: 0; pointer-events: none;
-      background: #000;
-      overflow: hidden;
+      opacity: 0.18;
     }
-
-    .data-element {
-      position: absolute;
-      color: rgba(34, 197, 94, 0.65);
-      white-space: pre;
-      text-shadow: 0 0 6px #22c55e;
-      font-weight: bold;
-      font-size: 0.65rem;
-      line-height: 1.2;
-      font-family: 'Courier New', monospace;
-    }
-
-    .col1 { left: 2%; animation: fall1 6s linear infinite; }
-    .col2 { left: 10%; animation: fall2 6.3s linear infinite 0.3s; }
-    .col3 { left: 18%; animation: fall3 6.1s linear infinite 0.6s; }
-    .col4 { left: 26%; animation: fall4 6.4s linear infinite 0.2s; }
-    .col5 { left: 34%; animation: fall5 5.9s linear infinite 0.5s; }
-    .col6 { left: 42%; animation: fall6 6.2s linear infinite 0.1s; }
-    .col7 { left: 50%; animation: fall7 6.3s linear infinite 0.4s; }
-    .col8 { left: 58%; animation: fall8 6s linear infinite 0.7s; }
-    .col9 { left: 66%; animation: fall9 6.2s linear infinite 0.35s; }
-    .col10 { left: 74%; animation: fall10 6.4s linear infinite 0.65s; }
-    .col11 { left: 82%; animation: fall11 6.1s linear infinite 0.2s; }
-    .col12 { left: 90%; animation: fall12 6.3s linear infinite 0.55s; }
-
-    @keyframes fall1 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall2 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall3 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall4 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall5 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall6 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall7 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall8 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall9 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall10 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall11 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
-    @keyframes fall12 { 0% { transform: translateY(-100%); opacity: 1; } 100% { transform: translateY(100vh); opacity: 0; } }
 
     /* NAV */
     nav {
@@ -115,6 +77,7 @@
       min-height: 100vh;
       display: flex; align-items: center;
       padding-top: 80px; max-width: 100%;
+      position: relative; z-index: 1;
     }
     .hero-inner {
       max-width: 1100px; margin: 0 auto;
@@ -192,14 +155,14 @@
     }
     .avatar-wrap { position: relative; }
     .avatar-wrap img, .avatar-placeholder {
-      width: 100%; aspect-ratio: 1; border-radius: var(--radius);
-      object-fit: cover; display: block;
+      width: 100%; aspect-ratio: 3/4; border-radius: var(--radius);
+      object-fit: cover; object-position: center 30%; display: block;
     }
     .avatar-placeholder {
       background: linear-gradient(135deg, var(--surface2), var(--accent) 80%);
       display: flex; align-items: center; justify-content: center; font-size: 5rem;
     }
-    /* glowing border + corner accents */
+    /* glowing border */
     .avatar-wrap::before {
       content: ''; position: absolute; inset: -3px;
       border-radius: calc(var(--radius) + 3px);
@@ -210,6 +173,16 @@
       border-radius: calc(var(--radius) + 3px);
       box-shadow: 0 0 24px rgba(124,58,237,.55), 0 0 60px rgba(6,182,212,.25);
       z-index: -1; animation: pulse-glow 3s ease-in-out infinite;
+    }
+    /* fade out white background - sides + bottom only */
+    .avatar-fade {
+      position: absolute; inset: 0;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(to right, rgba(13,13,13,.85) 0%, transparent 25%, transparent 75%, rgba(13,13,13,.85) 100%),
+        linear-gradient(to bottom, transparent 40%, rgba(13,13,13,.95) 100%),
+        linear-gradient(to top, transparent 85%, rgba(13,13,13,.5) 100%);
+      z-index: 2; pointer-events: none;
     }
     @keyframes pulse-glow {
       0%,100% { opacity: .6; }
@@ -422,20 +395,7 @@
 </head>
 <body>
 
-<div id="bg-container">
-  <div class="data-element col1">[[a,b]\A[c,d]]\A|A|\Adet\Arank\A[1,0]\A[0,1]\Av₁v₂\Aλ\Aeig</div>
-  <div class="data-element col2">∑ᵢ₌₁ⁿ\A∏ⱼ₌₁ᵐ\A∫f(x)\A∂f/∂x\A∇·F\A√x\Aπ\Ae\Aφ\Aτ\Aω</div>
-  <div class="data-element col3">μ\Aσ²\Aσ\Amedian\Amode\AIQR\Askew\Akurt\Arange\Amean\Avar</div>
-  <div class="data-element col4">A×B\AA⁻¹\AAᵀ\Adet(A)\Atr(A)\Aeig\Asvd\Aqr\Alu\Achol\Aadjugate</div>
-  <div class="data-element col5">N(μ,σ²)\APoisson\ABinom\AExp\AUnif\AChisq\Agamma\Abeta\Alaplace\Acauchy</div>
-  <div class="data-element col6">f(x)\Af'(x)\Af''(x)\Alog\Aexp\Asin\Acos\Atan\Asinh\Acosh\Atanh</div>
-  <div class="data-element col7">SELECT\AWHERE\AGROUPBY\AORDER\AJOIN\AGROUP\AFILTER\AMAP\ASELECT\ASUM\ACOUNT</div>
-  <div class="data-element col8">u·v\Au×v\A||v||\Anorm\Adot\Across\Aproj\Areflect\Aangle\Adist\Aunit</div>
-  <div class="data-element col9">R²\Ap-val\Aα\At-test\Aanova\Aχ²\Acorr\Acov\Amse\Armse\Amae</div>
-  <div class="data-element col10">y=mx+b\Aβ₀+β₁x\Ae^(iπ)=-1\AV=πr²h\AA=πr²\AV=4/3πr³\AD=√[(x₂-x₁)²]\AA²+B²=C²</div>
-  <div class="data-element col11">ax+by=c\Aspan\Abasis\Alinind\Alineq\Asyslinear\Aaug\Arowred\Aechelon\Arref</div>
-  <div class="data-element col12">pdf\Acdf\Aqf\Asample\Amle\Abayesian\Alik\Aprior\Apost\Aconf\Aprob</div>
-</div>
+<canvas id="bg-canvas"></canvas>
 
 <!-- NAV -->
 <nav>
@@ -529,6 +489,7 @@
   <div class="about-grid reveal">
     <div class="avatar-wrap">
       <img src="avatar.png" alt="Yang Qirui" onerror="this.outerHTML='<div class=\'avatar-placeholder\'>👨‍💻</div>'">
+      <div class="avatar-fade"></div>
       <div class="avatar-scan"></div>
       <div class="avatar-beam"></div>
       <div class="avatar-corner tl"></div>
@@ -782,7 +743,70 @@
 </footer>
 
 <script>
-  /* Matrix Data Math background - CSS animated */
+  /* Matrix Rain Background */
+  (function(){
+    const canvas = document.getElementById('bg-canvas');
+    const ctx = canvas.getContext('2d');
+    const SYMBOLS = [
+      // Math
+      '∑','∫','∂','∇','√','π','∞','λ','μ','σ','α','β','γ','δ','φ','ω','θ',
+      // Matrix / Linear Algebra
+      'det','rank','eig','svd','tr','||v||','A⁻¹','Aᵀ','span','basis',
+      // Stats
+      'R²','p-val','μ','σ²','cov','corr','IQR','mle','pdf','cdf',
+      // ML
+      'RF','GBT','LDA','PCA','MSE','RMSE','AUC','KNN','SVM',
+      // Data
+      'SELECT','WHERE','JOIN','GROUP','COUNT','SUM','FILTER','MAP',
+      // Formulas
+      'y=mx+b','e^iπ','A²+B²','N(μ,σ)','f\'(x)','∂f/∂x','β₀+β₁x',
+      // Numbers / misc
+      '0','1','0.5','1.96','3.14','2.71',
+    ];
+
+    let W, H, cols, drops;
+    const FONT_SIZE = 13;
+
+    function init() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+      cols = Math.floor(W / (FONT_SIZE * 5));
+      drops = Array.from({length: cols}, () => Math.random() * -50);
+    }
+    init();
+    window.addEventListener('resize', init);
+
+    function draw() {
+      // Dark semi-transparent overlay for trail effect
+      ctx.fillStyle = 'rgba(0,0,0,0.07)';
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.font = `bold ${FONT_SIZE}px 'Courier New', monospace`;
+
+      for (let i = 0; i < cols; i++) {
+        const sym = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        const x = i * (FONT_SIZE * 6);
+        const y = drops[i] * FONT_SIZE;
+
+        // Bright head
+        ctx.fillStyle = '#ffffff';
+        ctx.shadowColor = '#22c55e';
+        ctx.shadowBlur = 8;
+        ctx.fillText(sym, x, y);
+
+        // Green trail
+        ctx.fillStyle = '#22c55e';
+        ctx.shadowBlur = 0;
+        const trail = SYMBOLS[Math.floor(Math.random() * SYMBOLS.length)];
+        ctx.fillText(trail, x, y - FONT_SIZE * 2.5);
+
+        if (y > H && Math.random() > 0.97) drops[i] = 0;
+        drops[i] += 0.8;
+      }
+      ctx.shadowBlur = 0;
+    }
+    setInterval(draw, 45);
+  })();
 
   /* Scroll reveal */
   const observer = new IntersectionObserver((entries) => {
