@@ -647,7 +647,7 @@ h2 {
   border-radius: 14px; overflow: hidden; transition: transform .25s ease, border-color .25s ease;
 }
 .project-card:hover { transform: translateY(-3px); border-color: rgba(0,245,196,0.2); }
-.project-body { padding: 16px; text-align: left; }
+.project-body { padding: 16px; text-align: left; display: flex; flex-direction: column; height: 100%; }
 .project-title {
   font-size: 15px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;
   letter-spacing: -0.2px; font-family: 'Inter', 'Helvetica Neue', sans-serif;
@@ -697,7 +697,7 @@ h2 {
   line-height: 1.55;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
-.project-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.project-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: auto; padding-top: 12px; }
 .project-link {
   font-size: 11px; padding: 6px 12px; border-radius: 999px;
   border: 1px solid rgba(0,245,196,0.2); color: var(--teal); font-family: monospace;
