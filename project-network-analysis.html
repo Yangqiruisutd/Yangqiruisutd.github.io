@@ -17,17 +17,17 @@ body {
   color: #fff;
   font-family: 'Inter', 'Helvetica Neue', -apple-system, sans-serif;
 }
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 48px; height: 64px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.07);
+  background: rgba(9,9,16,0.88); backdrop-filter: blur(14px);
+}
 .page-shell {
   width: min(1120px, calc(100% - 48px));
   margin: 0 auto;
-  padding: 32px 0 72px;
-}
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 34px;
+  padding: 96px 0 72px;
 }
 .back-link {
   height: 34px;
@@ -391,11 +391,12 @@ body {
 </style>
 </head>
 <body>
+  <nav class="nav">
+    <a class="back-link" href="index.html#portfolio" data-i18n="back">← Back to Projects</a>
+    <button class="lang-toggle" id="langToggle" type="button">中文</button>
+  </nav>
+
   <div class="page-shell">
-    <div class="topbar">
-      <a class="back-link" href="index.html#portfolio" data-i18n="back">← Back to Projects</a>
-      <button class="lang-toggle" id="langToggle" type="button">中文</button>
-    </div>
 
     <section class="hero">
       <p class="eyebrow" data-i18n="label">Project Detail</p>
