@@ -7,6 +7,7 @@
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #00f5c4; }
 body {
   min-height: 100vh;
   background:
@@ -28,24 +29,40 @@ body {
   gap: 16px;
   margin-bottom: 34px;
 }
-.back-link, .lang-toggle {
-  height: 38px;
-  padding: 0 16px;
+.back-link {
+  height: 34px;
+  padding: 0 14px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: 1px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.03);
-  color: rgba(255,255,255,0.72);
+  color: rgba(255,255,255,0.5);
   text-decoration: none;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   font-size: 12px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
+  transition: color .2s, border-color .2s, background .2s;
 }
+.back-link:hover { color: var(--teal); border-color: rgba(0,245,196,0.3); background: rgba(0,245,196,0.06); }
 .lang-toggle {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(0,245,196,0.24);
+  background: rgba(0,245,196,0.06);
+  color: rgba(0,245,196,0.82);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0;
   cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
 }
+.lang-toggle:hover { color: #fff; }
 .hero {
   display: grid;
   gap: 16px;
