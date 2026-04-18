@@ -1,0 +1,2028 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Your Name · Data Analyst</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: #090910;
+  color: #fff;
+  font-family: 'Inter', 'Helvetica Neue', -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+:root {
+  --teal: #00f5c4;
+  --purple: #b464ff;
+  --blue: #378add;
+  --border: rgba(255,255,255,0.07);
+  --hero-orb-size: 126px;
+  --avatar-bg: rgb(18, 18, 24);
+  --avatar-scan-progress: 0;
+  --avatar-scan-dir: 1;
+  --avatar-glitch-strength: 0;
+  --hero-name-scan-progress: 0;
+  --hero-name-glitch-strength: 0;
+}
+#bg-canvas {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* ── Cat backdrop ── */
+#cat-wrap {
+  position: fixed; inset: 0;
+  z-index: 1; pointer-events: none;
+  overflow: hidden;
+}
+#cat-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 22%, rgba(0,245,196,0.08), transparent 34%),
+    radial-gradient(circle at 82% 68%, rgba(180,100,255,0.08), transparent 30%),
+    linear-gradient(180deg, rgba(9,9,16,0.15), rgba(9,9,16,0.42) 45%, rgba(9,9,16,0.72));
+}
+.cat-img {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: min(52vw, 760px);
+  max-width: none;
+  max-height: 78vh;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: normal;
+  filter: brightness(1.1) contrast(1.12) saturate(1.2)
+          blur(0.15px)
+          drop-shadow(0 0 38px rgba(0,245,196,0.18))
+          drop-shadow(0 0 112px rgba(180,100,255,0.18));
+  opacity: calc(var(--active-opacity, 0.24) * var(--cat-scan-progress, 0) * var(--cat-active, 0) * var(--hover-opacity-boost, 1));
+  --tx: -50%;
+  --ty: -50%;
+  --follow-x: 0px;
+  --follow-y: 0px;
+  --motion-x: 0px;
+  --motion-y: 0px;
+  --idle-scale: 0.94;
+  --active-scale: 1;
+  --cat-active: 0;
+  --cat-scan-progress: 0;
+  --hover-opacity-boost: 1;
+  transform: translate(calc(var(--tx) + var(--follow-x) + var(--motion-x)), calc(var(--ty) + var(--follow-y) + var(--motion-y))) scale(var(--idle-scale));
+  transform-origin: center;
+  transition: opacity 0.82s cubic-bezier(0.22,1,0.36,1),
+              transform 0.9s cubic-bezier(0.22,1,0.36,1),
+              filter 0.9s ease;
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,0.85) 0 38%, rgba(0,0,0,0.5) 58%, transparent 82%);
+  clip-path: inset(0 0 calc((1 - var(--cat-scan-progress, 0)) * 100%) 0);
+}
+.cat-img.active {
+  --cat-active: 1;
+  transform: translate(calc(var(--tx) + var(--follow-x) + var(--motion-x)), calc(var(--ty) + var(--follow-y) + var(--motion-y))) scale(var(--active-scale));
+}
+.cat-img.hover-glow {
+  --hover-opacity-boost: 1.85;
+  filter: brightness(1.18) contrast(1.16) saturate(1.28)
+          blur(0.05px)
+          drop-shadow(0 0 42px rgba(0,245,196,0.22))
+          drop-shadow(0 0 128px rgba(180,100,255,0.22));
+}
+#cat-0 {
+  width: min(40vw, 1320px);
+  max-height: 40vh;
+  left: 50%;
+  top: 16%;
+  --tx: -37%;
+  --ty: -32%;
+  --idle-scale: 0.965;
+  --active-scale: 1;
+  --active-opacity: 0.3;
+  transition: opacity 0.28s ease, transform 0.03s linear;
+}
+#cat-1 {
+  width: min(52vw, 760px);
+  max-height: 78vh;
+  left: 22%;
+  top: 50%;
+  --tx: -50%;
+  --ty: -50%;
+  --idle-scale: 0.94;
+  --active-scale: 1.02;
+  --active-opacity: 0.34;
+  filter: brightness(1.08) contrast(1.14) saturate(1.22)
+          blur(0.08px)
+          drop-shadow(0 0 40px rgba(0,245,196,0.18))
+          drop-shadow(0 0 118px rgba(180,100,255,0.18));
+}
+#cat-2 {
+  width: min(44vw, 700px);
+  max-height: 70vh;
+  left: 22%;
+  top: 74%;
+  --tx: -50%;
+  --ty: -50%;
+  --idle-scale: 0.9;
+  --active-scale: 1.08;
+  --active-opacity: 0.35;
+  filter: brightness(1.1) contrast(1.16) saturate(1.24)
+          blur(0.08px)
+          drop-shadow(0 0 42px rgba(0,245,196,0.2))
+          drop-shadow(0 0 126px rgba(180,100,255,0.2));
+}
+#cat-3 {
+  width: min(52vw, 760px);
+  max-height: 74vh;
+  left: 50%;
+  top: 52%;
+  --tx: -50%;
+  --ty: -50%;
+  --idle-scale: 0.9;
+  --active-scale: 1.08;
+  --active-opacity: 0.35;
+  filter: brightness(1.1) contrast(1.15) saturate(1.22)
+          blur(0.08px)
+          drop-shadow(0 0 42px rgba(0,245,196,0.2))
+          drop-shadow(0 0 120px rgba(180,100,255,0.2));
+}
+#cat-4 {
+  width: min(40vw, 620px);
+  max-height: 60vh;
+  left: 76%;
+  top: 72%;
+  --tx: -50%;
+  --ty: -50%;
+  --idle-scale: 0.92;
+  --active-scale: 1.06;
+  --active-opacity: 0.33;
+  filter: brightness(1.08) contrast(1.14) saturate(1.2)
+          blur(0.08px)
+          drop-shadow(0 0 42px rgba(0,245,196,0.2))
+          drop-shadow(0 0 122px rgba(180,100,255,0.2));
+}
+#hero .section-inner {
+  transform: translateY(96px);
+}
+
+/* ── Nav ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
+  padding: 0 48px; height: 64px;
+  border-bottom: 0.5px solid var(--border);
+  background: rgba(9,9,16,0.88); backdrop-filter: blur(14px);
+}
+.nav-logo {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--teal);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #090910;
+  letter-spacing: 1px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  justify-self: start;
+}
+.nav-links { display: flex; gap: 36px; justify-self: center; }
+.nav-links a { font-size: 12px; color: rgba(255,255,255,0.38); text-decoration: none; font-family: monospace; letter-spacing: 0.5px; transition: color 0.2s; }
+.nav-links a:hover { color: var(--teal); }
+.nav-socials { display: flex; gap: 10px; align-items: center; justify-self: end; }
+.nav-chip {
+  height: 34px; padding: 0 14px; border-radius: 999px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; color: rgba(255,255,255,0.5); text-decoration: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.5px; border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03); transition: color .2s, border-color .2s, background .2s;
+}
+.nav-chip:hover { color: var(--teal); border-color: rgba(0,245,196,0.3); background: rgba(0,245,196,0.06); }
+.nav-chip.lang { cursor: pointer; color: rgba(0,245,196,0.82); border-color: rgba(0,245,196,0.24); background: rgba(0,245,196,0.06); }
+.nav-chip.lang:hover { color: #fff; }
+
+/* ── Sections ── */
+section {
+  min-height: 100vh; padding: 100px 48px 80px;
+  position: relative; z-index: 3;
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+}
+.section-inner {
+  width: min(1100px, 100%);
+  max-width: 1100px;
+  padding-right: 0;
+  text-align: center;
+}
+.eyebrow { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: rgba(0,245,196,0.55); font-family: monospace; margin-bottom: 14px; }
+
+/* ── Avatar → holographic maze ball ── */
+.avatar {
+  width: var(--hero-orb-size); height: var(--hero-orb-size); border-radius: 50%;
+  background:
+    linear-gradient(180deg, rgba(7,10,18,0.06), rgba(7,10,18,0.22)),
+    url('avatar_1.jpg') 34% 34% / cover no-repeat,
+    repeating-linear-gradient(0deg,  transparent, transparent 12px, rgba(0,245,196,0.05) 12px, rgba(0,245,196,0.05) 13px),
+    repeating-linear-gradient(90deg, transparent, transparent 12px, rgba(0,245,196,0.05) 12px, rgba(0,245,196,0.05) 13px),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--avatar-bg) 72%, rgba(0,245,196,0.12)), color-mix(in srgb, var(--avatar-bg) 92%, rgb(9,9,22)) 76%),
+    var(--avatar-bg);
+  border: 3px solid rgba(0,245,196,0.75);
+  box-shadow: 0 0 28px rgba(0,245,196,0.55), 0 0 60px rgba(0,245,196,0.22),
+              0 0 110px rgba(180,100,255,0.18), inset 0 0 22px rgba(0,245,196,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: calc(var(--hero-orb-size) * 0.22); font-weight: 700; color: transparent;
+  margin: 0 auto 32px; position: relative;
+  animation: ball-pulse 2.6s ease-in-out infinite;
+  overflow: hidden;
+  isolation: isolate;
+}
+.avatar::before {
+  content: ''; position: absolute; inset: calc(var(--hero-orb-size) * -0.12); border-radius: 50%;
+  border: 2px dashed rgba(180,100,255,0.6);
+  animation: ring-spin 5.5s linear infinite;
+  z-index: 3;
+}
+.avatar::after {
+  content: ''; position: absolute; inset: calc(var(--hero-orb-size) * -0.23); border-radius: 50%;
+  border: 1.5px solid rgba(0,245,196,0.28);
+  animation: ring-spin 9s linear infinite reverse;
+  z-index: 3;
+}
+.avatar-404 {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding-top: 2px;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(26,31,48,0.96), rgba(6,8,14,0.98) 72%),
+    linear-gradient(180deg, rgba(8,10,20,0.92), rgba(2,4,8,0.98)),
+    repeating-linear-gradient(180deg, rgba(162,178,255,0.06) 0 2px, rgba(255,255,255,0) 2px 8px);
+  color: #edf4ff;
+  clip-path: inset(0 0 calc((1 - var(--avatar-scan-progress)) * 100%) 0 round 50%);
+  overflow: hidden;
+  opacity: calc(0.12 + var(--avatar-scan-progress) * 0.92);
+  animation: avatar-glitch-flicker 0.18s steps(2, end) infinite;
+}
+.avatar-404::before {
+  content: "";
+  position: absolute;
+  inset: 15%;
+  border-radius: 50%;
+  border: 5px solid rgba(22,26,46,0.98);
+  box-shadow:
+    0 0 0 1px rgba(245,249,255,0.08),
+    -4px 0 0 rgba(0,245,196,0.75),
+    4px 0 0 rgba(255,32,118,0.72),
+    0 0 18px rgba(8,10,20,0.46);
+  opacity: calc(0.42 + var(--avatar-scan-progress) * 0.52);
+}
+.avatar-404::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(180deg, rgba(255,255,255,0) 0 7px, rgba(166,189,255,0.08) 7px 9px),
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0));
+  mix-blend-mode: screen;
+  opacity: calc(0.35 + var(--avatar-glitch-strength) * 0.5);
+}
+.avatar-404-code,
+.avatar-404-copy {
+  position: relative;
+  z-index: 1;
+  display: block;
+  text-transform: uppercase;
+  color: #f6fbff;
+  text-shadow:
+    calc(-2px - var(--avatar-glitch-strength) * 2px) 0 rgba(0,245,196,0.9),
+    calc(2px + var(--avatar-glitch-strength) * 2px) 0 rgba(255,32,118,0.82),
+    0 0 14px rgba(255,255,255,0.06);
+}
+.avatar-404-code {
+  font-size: calc(var(--hero-orb-size) * 0.34);
+  line-height: 0.88;
+  letter-spacing: -0.09em;
+  font-weight: 900;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+.avatar-404-copy {
+  font-size: calc(var(--hero-orb-size) * 0.066);
+  letter-spacing: 0.08em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  opacity: 0.88;
+}
+.avatar-404-noise {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, transparent 0 10%, rgba(255,32,118,0.8) 10% 18%, transparent 18% 38%, rgba(0,245,196,0.76) 38% 50%, transparent 50% 70%, rgba(255,32,118,0.82) 70% 82%, transparent 82% 100%),
+    linear-gradient(90deg, transparent 0 28%, rgba(0,245,196,0.8) 28% 40%, transparent 40% 62%, rgba(255,32,118,0.8) 62% 72%, transparent 72% 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 11px, 100% 7px;
+  background-position:
+    0 calc(18% + var(--avatar-scan-progress) * 34%),
+    0 calc(56% + var(--avatar-scan-progress) * 18%);
+  opacity: calc(0.1 + var(--avatar-glitch-strength) * 0.88);
+  mix-blend-mode: screen;
+  animation: avatar-glitch-jump 0.22s steps(2, end) infinite;
+}
+@keyframes avatar-glitch-flicker {
+  0%, 100% { opacity: calc(0.14 + var(--avatar-scan-progress) * 0.9); }
+  24% { opacity: calc(0.08 + var(--avatar-scan-progress) * 0.82); }
+  26% { opacity: calc(0.22 + var(--avatar-scan-progress) * 0.94); }
+  58% { opacity: calc(0.12 + var(--avatar-scan-progress) * 0.88); }
+  60% { opacity: calc(0.2 + var(--avatar-scan-progress) * 0.96); }
+}
+@keyframes avatar-glitch-jump {
+  0%, 100% { transform: translate(0, 0); }
+  33% { transform: translate(calc(var(--avatar-glitch-strength) * 2px), calc(var(--avatar-scan-dir) * 1px)); }
+  66% { transform: translate(calc(var(--avatar-glitch-strength) * -2px), calc(var(--avatar-scan-dir) * -1px)); }
+}
+@keyframes ring-spin { to { transform: rotate(360deg); } }
+@keyframes ball-pulse {
+  0%,100% { box-shadow: 0 0 28px rgba(0,245,196,0.55), 0 0 60px rgba(0,245,196,0.22), 0 0 110px rgba(180,100,255,0.18); }
+  50%      { box-shadow: 0 0 36px rgba(0,245,196,0.75), 0 0 86px rgba(0,245,196,0.32), 0 0 145px rgba(180,100,255,0.28); }
+}
+
+.role-line { font-size: 13px; color: rgba(0,245,196,0.55); font-family: monospace; letter-spacing: 1.4px; margin-bottom: 30px; }
+.float-tags { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; justify-content: center; }
+.tag { font-size: 13px; padding: 7px 16px; border-radius: 999px; border: 0.5px solid rgba(0,245,196,0.22); color: rgba(0,245,196,0.75); background: rgba(0,245,196,0.04); font-family: monospace; }
+.tag.p { border-color: rgba(180,100,255,0.25); color: rgba(180,100,255,0.8); background: rgba(180,100,255,0.04); }
+.tag.b { border-color: rgba(55,138,221,0.25); color: rgba(100,180,255,0.8); background: rgba(55,138,221,0.04); }
+h1 {
+  font-size: clamp(52px, 7vw, 84px); font-weight: 800; line-height: 1.02; letter-spacing: -2.6px; margin-bottom: 24px;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif; text-transform: uppercase;
+}
+h1 .accent { color: var(--teal); }
+h1 .dim { color: rgba(255,255,255,0.22); }
+h2 {
+  font-size: clamp(36px, 4.8vw, 58px); font-weight: 800; line-height: 1.06; margin-bottom: 22px;
+  letter-spacing: -1.3px; text-transform: uppercase;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+.sub {
+  font-size: 18px; color: rgba(255,255,255,0.56); line-height: 1.82; margin: 0 auto 34px; max-width: 760px;
+  letter-spacing: 0.02em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.btns { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+.btn-primary { padding: 14px 34px; font-size: 15px; font-weight: 600; background: var(--teal); color: #090910; border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.2s; }
+.btn-primary:hover { opacity: 0.85; }
+.btn-secondary { padding: 14px 34px; font-size: 15px; background: transparent; color: rgba(255,255,255,0.55); border: 0.5px solid rgba(255,255,255,0.2); border-radius: 10px; cursor: pointer; transition: border-color 0.2s, color 0.2s; }
+.btn-secondary:hover { border-color: rgba(255,255,255,0.4); color: #fff; }
+.stats-row { display: flex; gap: 42px; margin-top: 42px; justify-content: center; flex-wrap: wrap; }
+.stat-num { font-size: 36px; font-weight: 700; color: var(--teal); font-family: monospace; }
+.stat-lbl { font-size: 13px; color: rgba(255,255,255,0.36); font-family: monospace; margin-top: 4px; }
+.s-divider { height: 0.5px; background: var(--border); margin: 0 48px; position: relative; z-index: 3; }
+.body-text {
+  font-size: 16px; color: rgba(255,255,255,0.54); line-height: 1.95; margin: 0 auto 16px; max-width: 860px;
+  letter-spacing: 0.015em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.about-link { font-size: 14px; color: var(--teal); font-family: monospace; text-decoration: none; }
+.about-link:hover { text-decoration: underline; }
+.compact-section { min-height: auto; padding-top: 72px; padding-bottom: 72px; }
+.lang-toggle { all: unset; }
+.hero-greeting {
+  font-size: 13px; letter-spacing: 2px; text-transform: uppercase;
+  color: rgba(0,245,196,0.7); font-family: monospace; margin-bottom: 12px;
+}
+.hero-name {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  background: linear-gradient(135deg, #ffffff 20%, rgba(255,255,255,0.8) 45%, var(--teal) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-name > span {
+  grid-area: 1 / 1;
+}
+.hero-name-base {
+  background: inherit;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  clip-path: inset(calc(var(--hero-name-scan-progress) * 100%) 0 0 0);
+  opacity: calc(1 - var(--hero-name-scan-progress) * 0.96);
+}
+.hero-name-glitch {
+  padding: 0 0.02em;
+  color: #eff6ff;
+  -webkit-text-fill-color: currentColor;
+  clip-path: inset(0 0 calc((1 - var(--hero-name-scan-progress)) * 100%) 0);
+  opacity: calc(0.08 + var(--hero-name-scan-progress) * 0.96);
+  text-shadow:
+    calc(-2px - var(--hero-name-glitch-strength) * 2px) 0 rgba(0,245,196,0.92),
+    calc(2px + var(--hero-name-glitch-strength) * 2px) 0 rgba(255,32,118,0.82),
+    0 0 18px rgba(8,12,18,0.5);
+  filter: saturate(0.88) contrast(1.12);
+}
+.about-badges, .social-links { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.project-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.badge {
+  font-size: 12px; padding: 7px 14px; border-radius: 999px;
+  border: 1px solid rgba(0,245,196,0.22); color: rgba(0,245,196,0.8);
+  background: rgba(0,245,196,0.06); font-family: monospace;
+}
+.project-tag {
+  font-size: 10px; padding: 3px 8px; border-radius: 999px;
+  border: 1px solid rgba(0,245,196,0.18); color: rgba(0,245,196,0.72);
+  background: rgba(0,245,196,0.05); font-family: monospace;
+}
+.techstack-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 22px; width: min(980px, 100%); margin: 0 auto;
+}
+.tech-item {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  padding: 18px 10px; border-radius: 16px;
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  transition: transform .25s ease, border-color .25s ease;
+}
+.tech-item:hover { transform: translateY(-4px); border-color: rgba(0,245,196,0.24); }
+.tech-item img, .tech-item svg { width: 42px; height: 42px; object-fit: contain; }
+.tech-item span { font-size: 12px; color: rgba(255,255,255,0.72); }
+#about .section-inner {
+  display: flex;
+  justify-content: flex-end;
+}
+.about-copy {
+  width: min(620px, 100%);
+  margin-left: auto;
+  text-align: left;
+}
+.about-copy .eyebrow,
+.about-copy .body-text {
+  margin-left: 0;
+  margin-right: 0;
+}
+.about-copy .body-text {
+  max-width: 620px;
+}
+.skills-stack {
+  margin-top: 34px;
+}
+.skills-stack .eyebrow {
+  margin-bottom: 18px;
+}
+.timeline {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  position: relative;
+  padding: 8px 0 0;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 10px;
+  bottom: 10px;
+  width: 16px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(0,245,196,0.92), rgba(48,140,255,0.78) 42%, rgba(180,100,255,0.78));
+  box-shadow:
+    0 0 26px rgba(0,245,196,0.16),
+    0 0 44px rgba(180,100,255,0.12),
+    inset 0 0 18px rgba(255,255,255,0.12);
+}
+.timeline-item {
+  position: relative;
+  width: 50%;
+  padding: 0 42px 18px;
+}
+.timeline-item.left {
+  margin-right: auto;
+  text-align: left;
+}
+.timeline-item.right {
+  margin-left: auto;
+  text-align: left;
+}
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #0c111b;
+  border: 3px solid rgba(255,255,255,0.92);
+  box-shadow:
+    0 0 0 5px rgba(0,245,196,0.12),
+    0 0 18px rgba(0,245,196,0.24);
+  z-index: 1;
+}
+.timeline-item.left::before {
+  right: -6px;
+}
+.timeline-item.right::before {
+  left: -6px;
+}
+.timeline-item.current::before {
+  background: var(--teal);
+  border-color: #fff;
+  box-shadow:
+    0 0 0 6px rgba(0,245,196,0.14),
+    0 0 24px rgba(0,245,196,0.52),
+    0 0 56px rgba(180,100,255,0.28);
+}
+.timeline-item.current .timeline-card {
+  border-color: rgba(0,245,196,0.34);
+  box-shadow:
+    0 0 0 1px rgba(0,245,196,0.04),
+    0 18px 50px rgba(2,4,12,0.48),
+    0 0 36px rgba(0,245,196,0.08);
+}
+.timeline-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.timeline-card {
+  position: relative;
+  padding: 14px 16px 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(0,245,196,0.08), transparent 38%),
+    rgba(7,10,18,0.72);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 12px 28px rgba(2,4,12,0.34);
+  text-align: left;
+}
+.timeline-role {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-family: 'Rajdhani', 'Inter', 'Helvetica Neue', sans-serif;
+  color: rgba(0,245,196,0.82);
+}
+.timeline-period {
+  font-size: clamp(18px, 2.2vw, 30px);
+  line-height: 1;
+  font-weight: 800;
+  color: rgba(98,232,255,0.92);
+  font-family: 'Orbitron', 'Inter', 'Helvetica Neue', sans-serif;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  text-shadow:
+    0 0 18px rgba(0,245,196,0.12),
+    0 0 34px rgba(180,100,255,0.08);
+}
+.timeline-org {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 8px;
+  font-family: 'Rajdhani', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.timeline-org-name {
+  color: rgba(255,255,255,0.5);
+}
+.timeline-location {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,245,196,0.18);
+  background: rgba(0,245,196,0.06);
+  color: rgba(98,232,255,0.92);
+  font-family: 'Rajdhani', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  letter-spacing: 0.08em;
+}
+.timeline-location::before {
+  content: "◉";
+  color: rgba(0,245,196,0.82);
+  font-size: 9px;
+}
+.timeline-bullets { list-style: none; }
+.timeline-bullets li {
+  position: relative; padding-left: 14px; margin-bottom: 5px;
+  color: rgba(255,255,255,0.68); line-height: 1.48;
+  font-size: 12px;
+  letter-spacing: 0.012em; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.timeline-bullets li::before {
+  content: "▸"; position: absolute; left: 0; top: 0;
+  color: rgba(180,100,255,0.82);
+}
+.timeline-bullets li:empty {
+  display: none;
+}
+.timeline-bullets strong { color: #fff; }
+.skills-wrap { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; justify-content: center; }
+.skill { font-size: 13px; padding: 7px 14px; border-radius: 999px; border: 0.5px solid rgba(255,255,255,0.11); color: rgba(255,255,255,0.4); font-family: monospace; transition: border-color 0.2s, color 0.2s; }
+.skill:hover { border-color: rgba(0,245,196,0.35); color: rgba(0,245,196,0.7); }
+.cards-grid, .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+.work-card { background: rgba(255,255,255,0.03); border: 0.5px solid rgba(255,255,255,0.07); border-radius: 11px; padding: 16px; transition: border-color 0.2s; }
+.work-card:hover { border-color: rgba(0,245,196,0.22); }
+.work-type { font-size: 12px; letter-spacing: 1.3px; text-transform: uppercase; color: rgba(0,245,196,0.4); font-family: monospace; margin-bottom: 8px; }
+.work-name {
+  font-size: 20px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;
+  letter-spacing: -0.3px; font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+.work-desc {
+  font-size: 14px; color: rgba(255,255,255,0.46); line-height: 1.8; margin-bottom: 14px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.work-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.work-tag { font-size: 12px; padding: 4px 9px; background: rgba(255,255,255,0.05); border-radius: 4px; color: rgba(255,255,255,0.38); font-family: monospace; }
+.project-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 14px; overflow: hidden; transition: transform .25s ease, border-color .25s ease;
+}
+.project-card:hover { transform: translateY(-3px); border-color: rgba(0,245,196,0.2); }
+.project-body { padding: 16px; text-align: left; }
+.project-title {
+  font-size: 15px; font-weight: 700; margin-bottom: 8px; text-transform: uppercase;
+  letter-spacing: -0.2px; font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}
+.project-meta {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.project-loc {
+  font-size: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(180,100,255,0.18);
+  color: rgba(210,198,255,0.86);
+  background: rgba(180,100,255,0.08);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.project-desc {
+  color: rgba(255,255,255,0.58); line-height: 1.65; margin-bottom: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.project-structure {
+  display: grid;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.project-line {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 8px;
+  align-items: start;
+}
+.project-line-label {
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(0,245,196,0.65);
+  font-family: 'Rajdhani', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  padding-top: 1px;
+}
+.project-line-copy {
+  font-size: 12px;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.55;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.project-links { display: flex; gap: 8px; flex-wrap: wrap; }
+.project-link {
+  font-size: 11px; padding: 6px 12px; border-radius: 999px;
+  border: 1px solid rgba(0,245,196,0.2); color: var(--teal); font-family: monospace;
+}
+.project-detail {
+  min-height: auto;
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+.project-detail-shell {
+  width: min(1120px, 100%);
+  margin: 0 auto;
+  display: grid;
+  gap: 24px;
+}
+.project-detail-head {
+  display: grid;
+  gap: 12px;
+  text-align: left;
+}
+.project-detail-title {
+  font-size: clamp(32px, 5vw, 48px);
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+}
+.project-detail-lead {
+  max-width: 880px;
+  color: rgba(255,255,255,0.68);
+  line-height: 1.72;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.project-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+.metric-card {
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(0,245,196,0.08), transparent 44%),
+    rgba(7,10,18,0.72);
+  box-shadow: 0 14px 36px rgba(2,4,12,0.26);
+}
+.metric-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(0,245,196,0.62);
+  font-family: 'Rajdhani', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-bottom: 10px;
+}
+.metric-value {
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1;
+  font-family: 'Orbitron', 'Inter', 'Helvetica Neue', sans-serif;
+  color: rgba(98,232,255,0.94);
+}
+.metric-note {
+  margin-top: 8px;
+  color: rgba(255,255,255,0.52);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.project-detail-grid {
+  display: grid;
+  grid-template-columns: 1.08fr 0.92fr;
+  gap: 16px;
+}
+.detail-card {
+  padding: 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+}
+.detail-kicker {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(180,100,255,0.72);
+  font-family: 'Rajdhani', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-bottom: 12px;
+}
+.detail-copy {
+  color: rgba(255,255,255,0.68);
+  line-height: 1.72;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.detail-list {
+  list-style: none;
+  display: grid;
+  gap: 10px;
+}
+.detail-list li {
+  position: relative;
+  padding-left: 16px;
+  color: rgba(255,255,255,0.7);
+  line-height: 1.62;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.detail-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: rgba(0,245,196,0.78);
+}
+.contact-inner { width: min(1240px, 100%); margin: 0 auto; text-align: left; }
+.contact-shell {
+  display: grid; grid-template-columns: minmax(280px, 0.86fr) minmax(0, 1.14fr);
+  gap: 64px; margin-top: 30px; text-align: left; align-items: start;
+}
+.contact-panel, .contact-form { background: transparent; border: 0; padding: 0; box-shadow: none; }
+.contact-kicker {
+  font-size: 12px; letter-spacing: 0; text-transform: none;
+  color: rgba(255,255,255,0.72); font-family: 'Inter', 'Helvetica Neue', sans-serif;
+  margin-bottom: 18px;
+}
+.contact-copy {
+  color: rgba(255,255,255,0.72); line-height: 1.7; max-width: 420px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.contact-actions {
+  display: flex; gap: 12px; justify-content: flex-start; flex-wrap: wrap; margin-top: 28px;
+}
+.contact-actions .project-link {
+  padding: 0; min-width: 38px; width: 38px; height: 38px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; border-color: rgba(255,255,255,0.14); background: rgba(255,255,255,0.03);
+}
+.contact-actions .project-link:hover { border-color: rgba(255,255,255,0.38); color: var(--teal); }
+.contact-form { display: flex; flex-direction: column; gap: 28px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+.form-group label {
+  display: block; font-size: 13px; color: rgba(255,255,255,0.82); margin-bottom: 12px; letter-spacing: 0;
+  text-transform: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.form-group input, .form-group textarea {
+  width: 100%; padding: 0 0 12px 0; border-radius: 0;
+  border: 0; border-bottom: 1px solid rgba(255,255,255,0.45); background: transparent;
+  color: #fff; font: inherit; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.form-group input:focus, .form-group textarea:focus { outline: none; border-bottom-color: var(--teal); }
+.form-group textarea { min-height: 92px; resize: vertical; padding-top: 2px; }
+.contact-send {
+  margin-top: 4px; align-self: flex-start; padding: 12px 28px;
+  background: #f4f6f8; color: #090910; border-radius: 6px; border: 0;
+  font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+footer { position: relative; z-index: 3; padding: 22px 48px; border-top: 0.5px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+.footer-copy { font-size: 11px; color: rgba(255,255,255,0.18); font-family: monospace; }
+.footer-links { display: flex; gap: 20px; }
+.footer-links a { font-size: 11px; color: rgba(255,255,255,0.28); text-decoration: none; font-family: monospace; transition: color 0.2s; }
+.footer-links a:hover { color: var(--teal); }
+#dots { position: fixed; right: 18px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 20; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.14); cursor: pointer; transition: background 0.3s, transform 0.3s; }
+.dot.active { background: var(--teal); transform: scale(1.4); }
+@media (max-width: 960px) {
+  .cat-img { width: min(78vw, 520px); max-height: 64vh; }
+  #cat-0 {
+    width: min(118vw, 940px);
+    top: 33%;
+    --tx: -30%;
+    --ty: -33%;
+  }
+  #cat-1 {
+    width: min(58vw, 470px);
+    left: 20%;
+    top: 54%;
+  }
+  #cat-2 {
+    width: min(54vw, 470px);
+    left: 20%;
+    top: 76%;
+  }
+  #cat-3 {
+    width: min(60vw, 520px);
+    left: 50%;
+    top: 56%;
+  }
+  #cat-4 {
+    width: min(50vw, 420px);
+    left: 78%;
+    top: 74%;
+  }
+  .contact-shell, .form-row, .project-metrics, .project-detail-grid { grid-template-columns: 1fr; }
+  .section-inner { max-width: none; }
+  #about .section-inner { justify-content: center; }
+  .about-copy { margin-right: auto; }
+  .timeline::before { left: 18px; transform: none; width: 8px; }
+  .timeline-item,
+  .timeline-item.left,
+  .timeline-item.right { width: 100%; margin: 0; padding: 0 0 14px 42px; text-align: left; }
+  .timeline-item::before,
+  .timeline-item.left::before,
+  .timeline-item.right::before { left: 12px; right: auto; top: 16px; }
+  h1 { font-size: clamp(42px, 9vw, 64px); }
+  h2 { font-size: clamp(30px, 6vw, 46px); }
+  .sub { font-size: 16px; }
+  .body-text { font-size: 15px; }
+  .cards-grid, .projects-grid { grid-template-columns: 1fr; }
+  section { padding: 90px 24px 60px; } nav { padding: 0 24px; }
+}
+@media (max-width: 620px) {
+  .cat-img { --active-opacity: 0.2; }
+  #cat-0 {
+    width: 150vw;
+    top: 31%;
+    --tx: -22%;
+    --ty: -31%;
+    --active-opacity: 0.2;
+  }
+  #cat-1 {
+    width: 66vw;
+    left: 22%;
+    top: 56%;
+  }
+  #cat-2 {
+    width: 66vw;
+    left: 20%;
+    top: 80%;
+  }
+  #cat-3 {
+    width: 74vw;
+    left: 50%;
+    top: 58%;
+  }
+  #cat-4 {
+    width: 58vw;
+    left: 76%;
+    top: 78%;
+  }
+  .avatar {
+    width: calc(var(--hero-orb-size) * 0.86);
+    height: calc(var(--hero-orb-size) * 0.86);
+  }
+  h1 { font-size: 38px; }
+  h2 { font-size: 30px; }
+  .sub { font-size: 15px; }
+  .body-text { font-size: 14px; }
+  .cards-grid { grid-template-columns: 1fr; }
+  #hero .section-inner { transform: translateY(56px); }
+  #about .section-inner { justify-content: center; }
+  .about-copy { width: 100%; }
+  nav { grid-template-columns: auto 1fr auto; column-gap: 12px; }
+  .nav-links { gap: 18px; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<div id="cat-wrap">
+  <img class="cat-img active" id="cat-0" src="images/6.png" alt="">
+  <img class="cat-img" id="cat-1" src="images/2.png" alt="">
+  <img class="cat-img" id="cat-2" src="images/3.png" alt="">
+  <img class="cat-img" id="cat-3" src="images/4.png" alt="">
+  <img class="cat-img" id="cat-4" src="images/5.png" alt="">
+</div>
+
+<nav>
+  <div class="nav-logo">YQ</div>
+  <div class="nav-links">
+    <a href="#about" data-i18n="nav.about">About</a>
+    <a href="#experience" data-i18n="nav.experience">Experience</a>
+    <a href="#skills" data-i18n="nav.skills">Skills</a>
+    <a href="#portfolio" data-i18n="nav.portfolio">Projects</a>
+    <a href="#contact" data-i18n="nav.contact">Contact</a>
+  </div>
+  <div class="nav-socials">
+    <a class="nav-chip" href="mailto:yangqiruisutd@gmail.com">Email</a>
+    <a class="nav-chip" href="https://www.linkedin.com" target="_blank" rel="noreferrer">LinkedIn</a>
+    <button class="nav-chip lang" id="langToggle" type="button">中文</button>
+  </div>
+</nav>
+
+<div id="dots">
+  <div class="dot active" data-i="0"></div><div class="dot" data-i="1"></div>
+  <div class="dot" data-i="2"></div><div class="dot" data-i="3"></div>
+  <div class="dot" data-i="4"></div><div class="dot" data-i="5"></div>
+</div>
+
+<!-- Hero -->
+<section id="hero">
+  <div class="section-inner">
+    <div class="avatar" aria-label="Profile photo">
+      <div class="avatar-404" aria-hidden="true">
+        <span class="avatar-404-code">404</span>
+        <span class="avatar-404-copy">page not found</span>
+        <span class="avatar-404-noise"></span>
+      </div>
+    </div>
+    <p class="hero-greeting reveal" data-i18n="hero.greeting">Hi, I'm</p>
+    <h1 class="hero-name reveal">
+      <span class="hero-name-base" data-i18n="hero.name">Yang Qirui</span>
+      <span class="hero-name-glitch" data-i18n="hero.alias">Nobody</span>
+    </h1>
+    <p class="role-line reveal" data-i18n="hero.role">// data_analyst · research_assistant · singapore</p>
+    <div class="float-tags">
+      <span class="tag">Python</span>
+      <span class="tag p">SQL</span>
+      <span class="tag b" data-i18n="skills.s3">Network Analysis</span>
+    </div>
+    <p class="sub reveal" data-i18n="hero.tagline">A <span>Data Analyst &amp; Research Assistant</span> passionate about turning messy, large-scale data into clear, actionable insights.</p>
+    <div class="btns">
+      <button class="btn-primary" onclick="document.getElementById('portfolio').scrollIntoView({behavior:'smooth'})" data-i18n="hero.cta1">View My Projects</button>
+      <button class="btn-secondary" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" data-i18n="hero.cta2">Get In Touch</button>
+    </div>
+    
+  </div>
+</section>
+<div class="s-divider"></div>
+
+<!-- About -->
+<section id="about">
+  <div class="section-inner reveal">
+    <div class="about-copy">
+      <p class="eyebrow" data-i18n="about.label">About Me</p>
+     
+      <p class="body-text" data-i18n="about.p1">I turn fragmented, messy data into <span>structured systems people can actually use</span> — for research, modeling, and decision-making.</p>
+      <p class="body-text" data-i18n="about.p2">At <span>SUTD</span>, I build and analyse <span>large-scale structured datasets</span>, from author disambiguation to citation and co-authorship networks, using Python and SQL to uncover interpretable collaboration patterns.</p>
+      <p class="body-text" data-i18n="about.p3">My work sits at the intersection of <span>data engineering, analytics, and applied modeling</span> — spanning 17 journals, 20 years of academic data, and production-style benchmark systems reaching <span>93% accuracy</span>.</p>
+      <p class="body-text" data-i18n="about.p4">With an <span>Engineering Systems and Design</span> background from SUTD and admission through the <span>MOE SM2 Scholarship</span>, I’m now looking for a <span>Data Analyst</span> role where I can turn complexity into clarity at real-world scale.</p>
+      <div class="about-badges">
+        
+      </div>
+    </div>
+  </div>
+</section>
+<div class="s-divider"></div>
+
+<section id="experience">
+  <div class="section-inner reveal">
+    <p class="eyebrow" data-i18n="exp.label">Experience</p>
+    <h2 data-i18n="exp.title">Experience &amp; Projects</h2>
+    <div class="timeline">
+      <div class="timeline-item left">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t1.period">2018 - 2024</div>
+            <div class="timeline-role" data-i18n="exp.t1.role">SUTD · Engineering Systems and Design</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t1.org">Singapore University of Technology and Design</span>
+            <span class="timeline-location" data-i18n="exp.t1.loc">Singapore</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t1.b1">Completed a Bachelor of Engineering in <strong>Engineering Systems and Design</strong> at SUTD.</li>
+          <li data-i18n="exp.t1.b2">Entered SUTD through the <strong>MOE SM2 Scholarship</strong>, awarded based on top academic standing before admission.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item right">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t2.period">Jan 2018 - Jan 2019</div>
+            <div class="timeline-role" data-i18n="exp.t2.role">Undergraduate Research Opportunities Program</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t2.org">Research Track</span>
+            <span class="timeline-location" data-i18n="exp.t2.loc">Singapore</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t2.b1">Worked on painting-authenticity analysis through <strong>image denoising</strong> and <strong>pixel-level features</strong>.</li>
+          <li data-i18n="exp.t2.b2">Built early analytical workflows in <strong>Python</strong>, forming the starting point for later research and data-modeling work.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item left">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t3.period">May 2019 - Aug 2019</div>
+            <div class="timeline-role" data-i18n="exp.t3.role">Exchange Research Project · Zhejiang University</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t3.org">Exchange Research Project</span>
+            <span class="timeline-location" data-i18n="exp.t3.loc">Hangzhou, China</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t3.b1">Designed experiments for <strong>20+</strong> participants and turned EEG/Kinect data into structured multimodal datasets.</li>
+          <li data-i18n="exp.t3.b2">Gained hands-on experience with experimental design, multimodal preprocessing, and early neural-network-based modeling.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item right">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t4.period">Sep 2019 - Dec 2019</div>
+            <div class="timeline-role" data-i18n="exp.t4.role">Search Results Improvement · Ernst &amp; Young</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t4.org">Academic-Industry Project</span>
+            <span class="timeline-location" data-i18n="exp.t4.loc">Singapore</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t4.b1">Analyzed <strong>10,000+</strong> news articles with Python and <strong>LDA</strong> to improve clustering and search quality.</li>
+          <li data-i18n="exp.t4.b2">Used topic modeling to identify themes and support better document grouping and search relevance.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item left">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t5.period">2020 - 2023</div>
+            <div class="timeline-role" data-i18n="exp.t5.role">Business Analytics &amp; Operations Research Track</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t5.org">SUTD · Advanced Coursework Focus</span>
+            <span class="timeline-location" data-i18n="exp.t5.loc">Singapore</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t5.b1">Completed the <strong>Business Analytics &amp; Operations Research</strong> track, with coursework in optimization, stochastic modeling, statistical machine learning, and game theory.</li>
+          <li data-i18n="exp.t5.b2">Built the theoretical base behind later work in prediction systems, analytical workflows, and data-driven decision support.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item right">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t6.period">Aug 2023 - May 2024</div>
+            <div class="timeline-role" data-i18n="exp.t6.role">Energy Predictive Model · Beez-Fm</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t6.org">Applied Modeling Project</span>
+            <span class="timeline-location" data-i18n="exp.t6.loc">Singapore</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t6.b1">Developed a data-driven energy benchmark system for pricing and negotiation in energy-saving contracts.</li>
+          <li data-i18n="exp.t6.b2">Integrated multi-source datasets for <strong>20+</strong> clients, including equipment, traffic, orders, utilities, and weather.</li>
+          <li data-i18n="exp.t6.b3">Built ML models with <strong>Random Forest</strong> and <strong>Gradient Boosted Trees</strong>, reaching <strong>93%</strong> accuracy.</li>
+          <li data-i18n="exp.t6.b4">Designed a lightweight <strong>HTML/CSS</strong> web interface for benchmark generation and visualization.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="timeline-item left current">
+        <div class="timeline-card">
+          <div class="timeline-header">
+            <div class="timeline-period" data-i18n="exp.t7.period">Feb 2025 - Present</div>
+            <div class="timeline-role" data-i18n="exp.t7.role">Research Assistant / Research Engineer · SUTD</div>
+          </div>
+          <div class="timeline-org">
+            <span class="timeline-org-name" data-i18n="exp.t7.org">Singapore University of Technology and Design</span>
+            <span class="timeline-location" data-i18n="exp.t7.loc">Singapore</span>
+          </div>
+          <ul class="timeline-bullets">
+          <li data-i18n="exp.t7.b1">Built a large-scale structured dataset spanning <strong>17 journals</strong> and a <strong>20-year</strong> time range from fragmented sources using Python.</li>
+          <li data-i18n="exp.t7.b2">Led data cleaning and entity resolution, including author disambiguation, to improve consistency and analytical reliability.</li>
+          <li data-i18n="exp.t7.b3">Constructed relational datasets such as co-authorship and citation networks using <strong>Python</strong> and <strong>SQL</strong>.</li>
+          <li data-i18n="exp.t7.b4">Applied clustering and network analysis, validating outcomes against real-world research collaboration structures.</li>
+          <li data-i18n="exp.t7.b5">Generated interpretable insights on collaboration patterns with the support of visualization tools and reproducible workflows.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="s-divider"></div>
+
+<section id="skills">
+  <div class="section-inner reveal">
+    <p class="eyebrow" data-i18n="skills.label">Skills</p>
+    <h2 data-i18n="skills.title">What I Can Do</h2>
+    <div class="cards-grid">
+      <div class="work-card"><div class="work-type">core</div><div class="work-name" data-i18n="skills.s1">Data Analysis</div><div class="work-desc">Python, SQL, large-scale dataset construction, exploratory analysis, visualization.</div></div>
+      <div class="work-card"><div class="work-type">modeling</div><div class="work-name" data-i18n="skills.s2">Machine Learning</div><div class="work-desc">Random Forest, Gradient Boosting, predictive modeling and benchmarking systems.</div></div>
+      <div class="work-card"><div class="work-type">graph</div><div class="work-name" data-i18n="skills.s3">Network Analysis</div><div class="work-desc">Co-authorship and citation networks, clustering, collaboration pattern interpretation.</div></div>
+      <div class="work-card"><div class="work-type">pipeline</div><div class="work-name" data-i18n="skills.s4">Data Cleaning</div><div class="work-desc">Entity resolution, author disambiguation, relational modeling and data quality improvement.</div></div>
+    </div>
+    <div class="skills-stack">
+      <p class="eyebrow" data-i18n="tech.label">Tech Stack</p>
+      <div class="techstack-grid">
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg" alt="Python"><span>Python</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" alt="SQL"><span>SQL</span></div>
+        <div class="tech-item"><img src="https://cdnl.tblsft.com/sites/default/files/pages/tableau_cmyk_2015.png" alt="Tableau"><span>Tableau</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/matlab/matlab-original.svg" alt="MATLAB"><span>MATLAB</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML"><span>HTML</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS"><span>CSS</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/r/r-original.svg" alt="R"><span>R</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" style="filter:invert(1)" alt="GitHub"><span>GitHub</span></div>
+        <div class="tech-item"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code"><span>VS Code</span></div>
+        <div class="tech-item"><img src="https://cdn.simpleicons.org/overleaf/47A141" alt="Overleaf"><span>Overleaf</span></div>
+        <div class="tech-item">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 3.5c1.876 0 3.255 1.722 2.78 3.535L11.03 19.48C9.407 19.056 8 17.156 8 15c0-2.761 1.791-5 4-5 .35 0 .69.05 1.013.143L14.5 5.643A6.47 6.47 0 0012 5.5z" fill="#c9a96e"/></svg>
+          <span>Claude Code</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="s-divider"></div>
+
+<section id="portfolio">
+  <div class="section-inner reveal">
+    <p class="eyebrow" data-i18n="portfolio.label">Portfolio</p>
+    <h2 data-i18n="portfolio.title">Selected Projects</h2>
+    <div class="projects-grid">
+      <div class="project-card">
+        <div class="project-body">
+          <div class="project-title" data-i18n="portfolio.p1.title">Co-citation Network Analysis</div>
+          <div class="project-meta">
+            <div class="project-tags"><span class="project-tag">Python</span><span class="project-tag">SQL</span><span class="project-tag">MATLAB</span><span class="project-tag" data-i18n="skills.s3">Network Analysis</span></div>
+            <span class="project-loc" data-i18n="portfolio.p1.loc">Singapore</span>
+          </div>
+          <div class="project-structure">
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.did">What</div>
+              <div class="project-line-copy" data-i18n="portfolio.p1.did">Built a structured co-authorship and citation network dataset across 17 journals and 20 years of academic records.</div>
+            </div>
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.used">Tools</div>
+              <div class="project-line-copy" data-i18n="portfolio.p1.used">Used Python, SQL, and MATLAB for data cleaning, entity resolution, relational modeling, clustering, and network analysis.</div>
+            </div>
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.result">Outcome</div>
+              <div class="project-line-copy" data-i18n="portfolio.p1.result">Revealed interpretable collaboration patterns and built a reusable dataset for downstream academic network research.</div>
+            </div>
+          </div>
+          <div class="project-links"><a class="project-link" href="project-network-analysis.html" data-i18n="portfolio.details">Details →</a></div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-body">
+          <div class="project-title" data-i18n="portfolio.p2.title">Energy Benchmark Prediction System</div>
+          <div class="project-meta">
+            <div class="project-tags"><span class="project-tag">Python</span><span class="project-tag">Random Forest</span><span class="project-tag">GBT</span><span class="project-tag">HTML/CSS</span></div>
+            <span class="project-loc" data-i18n="portfolio.p2.loc">Singapore</span>
+          </div>
+          <div class="project-structure">
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.did">What</div>
+              <div class="project-line-copy" data-i18n="portfolio.p2.did">Developed a data-driven energy benchmark system for pricing and negotiation in energy-saving contracts.</div>
+            </div>
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.used">Tools</div>
+              <div class="project-line-copy" data-i18n="portfolio.p2.used">Integrated multi-source operational data and built machine-learning models with Python, Random Forest, GBT, and HTML/CSS.</div>
+            </div>
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.result">Outcome</div>
+              <div class="project-line-copy" data-i18n="portfolio.p2.result">Reached 93% prediction accuracy and delivered a lightweight benchmark generation and visualization workflow.</div>
+            </div>
+          </div>
+          <div class="project-links"><a class="project-link" href="#" data-i18n="portfolio.details">Details →</a></div>
+        </div>
+      </div>
+      <div class="project-card">
+        <div class="project-body">
+          <div class="project-title" data-i18n="portfolio.p3.title">Search Results Optimization</div>
+          <div class="project-meta">
+            <div class="project-tags"><span class="project-tag">Python</span><span class="project-tag">LDA</span><span class="project-tag">NLP</span></div>
+            <span class="project-loc" data-i18n="portfolio.p3.loc">Singapore</span>
+          </div>
+          <div class="project-structure">
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.did">What</div>
+              <div class="project-line-copy" data-i18n="portfolio.p3.did">Analyzed 10,000+ news articles to improve document grouping and search relevance in an academic-industry project.</div>
+            </div>
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.used">Tools</div>
+              <div class="project-line-copy" data-i18n="portfolio.p3.used">Used Python for text preprocessing and applied topic modeling with LDA to identify themes and cluster structure.</div>
+            </div>
+            <div class="project-line">
+              <div class="project-line-label" data-i18n="portfolio.result">Outcome</div>
+              <div class="project-line-copy" data-i18n="portfolio.p3.result">Improved clustering quality and supported better retrieval logic for news search optimization.</div>
+            </div>
+          </div>
+          <div class="project-links"><a class="project-link" href="#" data-i18n="portfolio.details">Details →</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="s-divider"></div>
+
+<section id="contact">
+  <div class="contact-inner reveal">
+    <div class="contact-shell">
+      <div class="contact-panel">
+        <p class="eyebrow" data-i18n="contact.label">Contact</p>
+        <h2 data-i18n="contact.title" style="font-size:clamp(56px,7vw,74px);margin-bottom:18px">Get In Touch</h2>
+        <div class="contact-kicker" data-i18n="contact.panel">Best for</div>
+        <p class="contact-copy" data-i18n="contact.panel.copy">Data Analyst opportunities, research collaborations, and conversations around structured data, modeling, and analytics systems.</p>
+        <div class="contact-actions">
+          <a class="project-link" href="mailto:yangqiruisutd@gmail.com" aria-label="Email" title="Email">✉</a>
+          <a class="project-link" href="https://www.linkedin.com" target="_blank" rel="noreferrer" aria-label="LinkedIn" title="LinkedIn">in</a>
+          <a class="project-link" href="tel:+6594695694" aria-label="Phone" title="Phone">☎</a>
+        </div>
+      </div>
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label data-i18n="contact.name">Full name</label>
+            <input type="text" data-i18n-placeholder="contact.name.ph" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label data-i18n="contact.email">Email address</label>
+            <input type="email" placeholder="your@email.com" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label data-i18n="contact.subject">Subject</label>
+          <input type="text" data-i18n-placeholder="contact.subject.ph" placeholder="What's on your mind?">
+        </div>
+        <div class="form-group">
+          <label data-i18n="contact.message">Write your message here</label>
+          <textarea data-i18n-placeholder="contact.message.ph" placeholder="Write your message here..."></textarea>
+        </div>
+        <button class="contact-send" type="submit" data-i18n="contact.send">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span class="footer-copy" data-i18n="footer.text">© 2026 Yang Qirui · Built with HTML</span>
+  <div class="footer-links"><a href="mailto:yangqiruisutd@gmail.com">email</a><a href="https://www.linkedin.com" target="_blank" rel="noreferrer">linkedin</a></div>
+</footer>
+
+<script>
+(function(){
+  if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+  }
+  window.scrollTo(0, 0);
+
+  /* Background canvas */
+  const canvas=document.getElementById('bg-canvas'), ctx=canvas.getContext('2d');
+  const matrixSymbols = ['0','1','0','1','0','1','10','01','001','101','110','011'];
+  let matrixCells = [];
+  let scanY = 0;
+  let scanDir = 1;
+  const scanSpeed = 1.35;
+  const heroAvatar=document.querySelector('#hero .avatar');
+  const heroNameEl=document.querySelector('#hero .hero-name');
+
+  function clamp(value, min, max){
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function updateAvatarScanReveal(){
+    if(!heroAvatar){
+      return;
+    }
+
+    heroAvatar.style.setProperty('--avatar-scan-dir', String(scanDir));
+
+    const rect = heroAvatar.getBoundingClientRect();
+    const inViewport = rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+    if(!inViewport){
+      heroAvatar.style.setProperty('--avatar-scan-progress', '0');
+      heroAvatar.style.setProperty('--avatar-glitch-strength', '0');
+      return;
+    }
+
+    const progress = clamp((scanY - rect.top) / rect.height, 0, 1);
+    heroAvatar.style.setProperty('--avatar-scan-progress', progress.toFixed(4));
+
+    const distanceToBeam = Math.abs(scanY - clamp(rect.top, 0, window.innerHeight));
+    const beamBoost = clamp(1 - distanceToBeam / Math.max(rect.height * 1.15, 1), 0, 1);
+    const strength = clamp(progress * 0.65 + beamBoost * 0.55, 0, 1);
+    heroAvatar.style.setProperty('--avatar-glitch-strength', strength.toFixed(4));
+  }
+
+  function updateHeroNameScanReveal(){
+    if(!heroNameEl){
+      return;
+    }
+
+    heroNameEl.style.setProperty('--avatar-scan-dir', String(scanDir));
+
+    const rect = heroNameEl.getBoundingClientRect();
+    const inViewport = rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+    if(!inViewport){
+      heroNameEl.style.setProperty('--hero-name-scan-progress', '0');
+      heroNameEl.style.setProperty('--hero-name-glitch-strength', '0');
+      return;
+    }
+
+    const progress = clamp((scanY - rect.top) / rect.height, 0, 1);
+    heroNameEl.style.setProperty('--hero-name-scan-progress', progress.toFixed(4));
+
+    const beamCenter = clamp(scanY, rect.top, rect.bottom);
+    const distanceToBeam = Math.abs(beamCenter - (rect.top + rect.height * progress));
+    const beamBoost = clamp(1 - distanceToBeam / Math.max(rect.height * 0.9, 1), 0, 1);
+    const strength = clamp(progress * 0.55 + beamBoost * 0.75, 0, 1);
+    heroNameEl.style.setProperty('--hero-name-glitch-strength', strength.toFixed(4));
+  }
+
+  function updateCatScanReveal(){
+    catImgs.forEach(cat => {
+      if(!cat || !cat.classList.contains('active')){
+        cat?.style.setProperty('--cat-scan-progress', '0');
+        return;
+      }
+
+      const rect = cat.getBoundingClientRect();
+      const inViewport = rect.bottom > 0 && rect.top < window.innerHeight && rect.right > 0 && rect.left < window.innerWidth;
+      if(!inViewport){
+        cat.style.setProperty('--cat-scan-progress', '0');
+        return;
+      }
+
+      const progress = clamp((scanY - rect.top) / rect.height, 0, 1);
+      cat.style.setProperty('--cat-scan-progress', progress.toFixed(4));
+    });
+  }
+
+  function updateCatHover(clientX, clientY){
+    catImgs.forEach(cat => {
+      if(!cat || !cat.classList.contains('active')){
+        cat?.classList.remove('hover-glow');
+        return;
+      }
+
+      const rect = cat.getBoundingClientRect();
+      const visibleEnough = Number.parseFloat(getComputedStyle(cat).getPropertyValue('--cat-scan-progress')) > 0.08;
+      const inside = clientX >= rect.left && clientX <= rect.right && clientY >= rect.top && clientY <= rect.bottom;
+      cat.classList.toggle('hover-glow', visibleEnough && inside);
+    });
+  }
+
+  function buildMatrix(){
+    matrixCells = [];
+    const colStep = 64;
+    const rowStep = 28;
+    for(let y = 24; y < canvas.height; y += rowStep){
+      for(let x = 18; x < canvas.width; x += colStep){
+        if (Math.random() > 0.4) continue;
+        matrixCells.push({
+          x: x + (Math.random() - 0.5) * 26,
+          y: y + (Math.random() - 0.5) * 16,
+          symbol: matrixSymbols[Math.floor(Math.random() * matrixSymbols.length)],
+          alpha: 0.08 + Math.random() * 0.14,
+          color: ['0,245,196','125,240,220','170,255,245'][Math.floor(Math.random() * 3)],
+        });
+      }
+    }
+  }
+
+  function resize(){
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    buildMatrix();
+    scanY = Math.min(scanY, canvas.height);
+    updateAvatarScanReveal();
+    updateHeroNameScanReveal();
+    if (typeof catImgs !== 'undefined') {
+      updateCatScanReveal();
+    }
+  }
+  window.addEventListener('resize', resize);
+
+  function drawBg(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle='rgba(0,245,196,0.024)';ctx.lineWidth=.5;
+    for(let x=0;x<canvas.width;x+=44){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke();}
+    for(let y=0;y<canvas.height;y+=44){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke();}
+
+    ctx.font = "12px ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace";
+    ctx.textBaseline = 'middle';
+    matrixCells.forEach(cell => {
+      const distance = Math.abs(cell.y - scanY);
+      const nearBeam = Math.max(0, 1 - distance / 120);
+      const revealed = cell.y <= scanY ? 1 : 0;
+      const alpha = revealed * cell.alpha + nearBeam * 0.18;
+      if(alpha <= 0.01) return;
+      ctx.fillStyle = `rgba(${cell.color},${Math.min(alpha, 0.34)})`;
+      ctx.fillText(cell.symbol, cell.x, cell.y);
+    });
+
+    const beamGlow = ctx.createLinearGradient(0, scanY - 30, 0, scanY + 30);
+    beamGlow.addColorStop(0, 'rgba(0,245,196,0)');
+    beamGlow.addColorStop(0.45, 'rgba(0,245,196,0.08)');
+    beamGlow.addColorStop(0.5, 'rgba(255,255,255,0.28)');
+    beamGlow.addColorStop(0.55, 'rgba(0,245,196,0.08)');
+    beamGlow.addColorStop(1, 'rgba(0,245,196,0)');
+    ctx.fillStyle = beamGlow;
+    ctx.fillRect(0, scanY - 30, canvas.width, 60);
+
+    ctx.beginPath();
+    ctx.moveTo(0, scanY);
+    ctx.lineTo(canvas.width, scanY);
+    ctx.strokeStyle='rgba(210,255,255,0.75)';
+    ctx.lineWidth=1.15;
+    ctx.stroke();
+
+    const len=22;ctx.strokeStyle='rgba(0,245,196,0.2)';ctx.lineWidth=1;
+    [[18,18,1,1],[canvas.width-18,18,-1,1],[18,canvas.height-18,1,-1],[canvas.width-18,canvas.height-18,-1,-1]].forEach(([ax,ay,sx,sy])=>{ctx.beginPath();ctx.moveTo(ax+sx*len,ay);ctx.lineTo(ax,ay);ctx.lineTo(ax,ay+sy*len);ctx.stroke();});
+
+    scanY += scanDir * scanSpeed;
+    if(scanY >= canvas.height){
+      scanY = canvas.height;
+      scanDir = -1;
+    } else if(scanY <= 0){
+      scanY = 0;
+      scanDir = 1;
+      matrixCells.forEach(cell => {
+        if(Math.random() > 0.82) cell.symbol = matrixSymbols[Math.floor(Math.random() * matrixSymbols.length)];
+      });
+    }
+    updateAvatarScanReveal();
+    updateHeroNameScanReveal();
+    if (typeof catImgs !== 'undefined') {
+      updateCatScanReveal();
+    }
+    requestAnimationFrame(drawBg);
+  }
+
+  /* ── Direction-aware cat pose switcher ── */
+  const sections =['hero','about','experience','skills','portfolio','contact'];
+  const sectionCats = ['cat-0','cat-1','cat-2','cat-3','cat-4','cat-4'];
+  const catImgs  = sectionCats.map(id => document.getElementById(id));
+  const dots     =document.querySelectorAll('.dot');
+  const hero     =document.getElementById('hero');
+  const heroCat  =document.getElementById('cat-0');
+  let cur=0, scrollDir=1, lastSY=0;
+  let heroAnchor=null;
+  const heroFollowSpeed=1;
+  const translations = {
+    en: {
+      'nav.about': 'About',
+      'nav.experience': 'Experience',
+      'nav.skills': 'Skills',
+      'nav.portfolio': 'Projects',
+      'nav.contact': 'Contact',
+      'hero.greeting': 'Hi, I\'m',
+      'hero.name': 'Yang Qirui',
+      'hero.alias': 'Nobody',
+      'hero.role': '// data_analyst · research_assistant · singapore',
+      'hero.tagline': 'A <span>Data Analyst &amp; Research Assistant</span> passionate about turning messy, large-scale data into clear, actionable insights — from citation networks to energy benchmarks.',
+      'hero.cta1': 'View My Projects',
+      'hero.cta2': 'Get In Touch',
+      'tech.label': 'Tech Stack',
+      'about.label': 'About Me',
+      'about.title': 'About Me',
+      'about.p1': 'I turn fragmented, messy data into <span>structured systems people can actually use</span> — for research, modeling, and decision-making.',
+      'about.p2': 'At <span>SUTD</span>, I build and analyse <span>large-scale structured datasets</span>, from author disambiguation to citation and co-authorship networks, using Python and SQL to uncover interpretable collaboration patterns.',
+      'about.p3': 'My work sits at the intersection of <span>data engineering, analytics, and applied modeling</span> — spanning 17 journals, 20 years of academic data, and production-style benchmark systems reaching <span>93% accuracy</span>.',
+      'about.p4': 'With an <span>Engineering Systems and Design</span> background from SUTD and admission through the <span>MOE SM2 Scholarship</span>, I’m now looking for a <span>Data Analyst</span> role where I can turn complexity into clarity at real-world scale.',
+      'about.badge.lang': '🌐 English & Mandarin',
+      'about.badge.open': '📊 Open to DA Roles',
+      'about.contact': 'Contact Me ✉️',
+      'exp.label': 'Experience',
+      'exp.title': 'Experience &amp; Projects',
+      'exp.t1.role': 'SUTD · Engineering Systems and Design',
+      'exp.t1.period': '2018 - 2024',
+      'exp.t1.org': 'Singapore University of Technology and Design',
+      'exp.t1.loc': 'Singapore',
+      'exp.t1.b1': 'Completed a Bachelor of Engineering in <strong>Engineering Systems and Design</strong> at SUTD.',
+      'exp.t1.b2': 'Entered SUTD through the <strong>MOE SM2 Scholarship</strong>, awarded based on top academic standing before admission.',
+      'exp.t2.role': 'Undergraduate Research Opportunities Program',
+      'exp.t2.period': 'Jan 2018 - Jan 2019',
+      'exp.t2.org': 'Research Track',
+      'exp.t2.loc': 'Singapore',
+      'exp.t2.b1': 'Worked on painting-authenticity analysis through <strong>image denoising</strong> and <strong>pixel-level features</strong>.',
+      'exp.t2.b2': 'Built early analytical workflows in <strong>Python</strong>, forming the starting point for later research and data-modeling work.',
+      'exp.t3.role': 'Exchange Research Project · Zhejiang University',
+      'exp.t3.period': 'May 2019 - Aug 2019',
+      'exp.t3.org': 'Exchange Research Project',
+      'exp.t3.loc': 'Hangzhou, China',
+      'exp.t3.b1': 'Designed experiments for <strong>20+</strong> participants and turned EEG/Kinect data into structured multimodal datasets.',
+      'exp.t3.b2': 'Gained hands-on experience with experimental design, multimodal preprocessing, and early neural-network-based modeling.',
+      'exp.t4.role': 'Search Results Improvement · Ernst &amp; Young',
+      'exp.t4.period': 'Sep 2019 - Dec 2019',
+      'exp.t4.org': 'Academic-Industry Project',
+      'exp.t4.loc': 'Singapore',
+      'exp.t4.b1': 'Analyzed <strong>10,000+</strong> news articles with Python and <strong>LDA</strong> to improve clustering and search quality.',
+      'exp.t4.b2': 'Used topic modeling to identify themes and support better document grouping and search relevance.',
+      'exp.t5.role': 'Business Analytics &amp; Operations Research Track',
+      'exp.t5.period': '2020 - 2023',
+      'exp.t5.org': 'SUTD · Advanced Coursework Focus',
+      'exp.t5.loc': 'Singapore',
+      'exp.t5.b1': 'Completed the <strong>Business Analytics &amp; Operations Research</strong> track, with coursework in optimization, stochastic modeling, statistical machine learning, and game theory.',
+      'exp.t5.b2': 'Built the theoretical base behind later work in prediction systems, analytical workflows, and data-driven decision support.',
+      'exp.t6.role': 'Energy Predictive Model · Beez-Fm',
+      'exp.t6.period': 'Aug 2023 - May 2024',
+      'exp.t6.org': 'Applied Modeling Project',
+      'exp.t6.loc': 'Singapore',
+      'exp.t6.b1': 'Developed a data-driven energy benchmark system for pricing and negotiation in energy-saving contracts.',
+      'exp.t6.b2': 'Integrated multi-source datasets for <strong>20+</strong> clients, including equipment, traffic, orders, utilities, and weather.',
+      'exp.t6.b3': 'Built ML models with <strong>Random Forest</strong> and <strong>Gradient Boosted Trees</strong>, reaching <strong>93%</strong> accuracy.',
+      'exp.t6.b4': 'Designed a lightweight <strong>HTML/CSS</strong> web interface for benchmark generation and visualization.',
+      'exp.t7.role': 'Research Assistant / Research Engineer · SUTD',
+      'exp.t7.period': 'Feb 2025 - Present',
+      'exp.t7.org': 'Singapore University of Technology and Design',
+      'exp.t7.loc': 'Singapore',
+      'exp.t7.b1': 'Built a large-scale structured dataset spanning <strong>17 journals</strong> and a <strong>20-year</strong> time range from fragmented sources using Python.',
+      'exp.t7.b2': 'Led data cleaning and entity resolution, including author disambiguation, to improve consistency and analytical reliability.',
+      'exp.t7.b3': 'Constructed relational datasets such as co-authorship and citation networks using <strong>Python</strong> and <strong>SQL</strong>.',
+      'exp.t7.b4': 'Applied clustering and network analysis, validating outcomes against real-world research collaboration structures.',
+      'exp.t7.b5': 'Generated interpretable insights on collaboration patterns with the support of visualization tools and reproducible workflows.',
+      'skills.label': 'Skills',
+      'skills.title': 'What I Can Do',
+      'skills.s1': 'Data Analysis',
+      'skills.s2': 'Machine Learning',
+      'skills.s3': 'Network Analysis',
+      'skills.s4': 'Data Cleaning',
+      'portfolio.label': 'Portfolio',
+      'portfolio.title': 'Selected Projects',
+      'portfolio.details': 'Details →',
+      'portfolio.did': 'What',
+      'portfolio.used': 'Tools',
+      'portfolio.result': 'Outcome',
+      'portfolio.p1.title': 'Co-citation Network Analysis',
+      'portfolio.p1.desc': 'Built a 20-year, 17-journal structured dataset from scratch, constructed co-authorship and citation networks, and uncovered collaboration patterns via clustering and network analysis.',
+      'portfolio.p1.loc': 'Singapore',
+      'portfolio.p1.did': 'Built a structured co-authorship and citation network dataset across 17 journals and 20 years of academic records.',
+      'portfolio.p1.used': 'Used Python, SQL, and MATLAB for data cleaning, entity resolution, relational modeling, clustering, and network analysis.',
+      'portfolio.p1.result': 'Revealed interpretable collaboration patterns and built a reusable dataset for downstream academic network research.',
+      'project.network.label': 'Project Detail',
+      'project.network.title': 'Co-authorship &amp; Citation Network Analysis',
+      'project.network.lead': 'Built a large-scale co-authorship and citation network dataset spanning 17 journals and 20 years of academic records. Using Python, SQL, and MATLAB, I transformed fragmented source data into structured relational networks for data cleaning, clustering, network analysis, and interpretable insights into research collaboration patterns.',
+      'project.network.m1.label': 'Scale',
+      'project.network.m1.value': '17 Journals',
+      'project.network.m1.note': 'Cross-journal academic records integrated into a unified structured dataset.',
+      'project.network.m2.label': 'Time Span',
+      'project.network.m2.value': '20 Years',
+      'project.network.m2.note': 'Longitudinal publication and citation data used to analyze evolving collaboration patterns.',
+      'project.network.m3.label': 'Stack',
+      'project.network.m3.value': 'Python / SQL / MATLAB',
+      'project.network.m3.note': 'Used across data cleaning, relational modeling, clustering, and structural analysis workflows.',
+      'project.network.k1': 'What I Built',
+      'project.network.copy1': 'The project started from fragmented academic records spread across multiple journals and years. I consolidated them into a structured dataset and then constructed co-authorship and citation networks that could support downstream relational analysis at scale.',
+      'project.network.k2': 'Methods',
+      'project.network.l1': 'Cleaned noisy source records and resolved author identity inconsistencies.',
+      'project.network.l2': 'Built relational and matrix-based network representations for analysis.',
+      'project.network.l3': 'Applied clustering and network analysis to uncover interpretable collaboration structures.',
+      'project.network.k3': 'Why It Matters',
+      'project.network.copy2': 'Rather than treating publications as isolated records, this work reframed them as connected systems. That made it possible to study research communities, collaboration dynamics, and structural patterns in a way that was both analytically rigorous and practically interpretable.',
+      'project.network.k4': 'Outcome',
+      'project.network.copy3': 'The final output was a reusable network dataset and workflow that supported scalable analysis, clearer collaboration insights, and more reliable downstream experimentation for academic network research.',
+      'portfolio.p2.title': 'Energy Benchmark Prediction System',
+      'portfolio.p2.desc': 'Developed a data-driven energy benchmark system for 20+ clients. Integrated multi-source datasets and built ML models achieving 93% accuracy.',
+      'portfolio.p2.loc': 'Singapore',
+      'portfolio.p2.did': 'Developed a data-driven energy benchmark system for pricing and negotiation in energy-saving contracts.',
+      'portfolio.p2.used': 'Integrated multi-source operational data and built machine-learning models with Python, Random Forest, GBT, and HTML/CSS.',
+      'portfolio.p2.result': 'Reached 93% prediction accuracy and delivered a lightweight benchmark generation and visualization workflow.',
+      'portfolio.p3.title': 'Search Results Optimization',
+      'portfolio.p3.desc': 'Analysed 10,000+ news articles for Ernst & Young using topic modeling (LDA) to enhance document clustering quality and improve search relevance.',
+      'portfolio.p3.loc': 'Singapore',
+      'portfolio.p3.did': 'Analyzed 10,000+ news articles to improve document grouping and search relevance in an academic-industry project.',
+      'portfolio.p3.used': 'Used Python for text preprocessing and applied topic modeling with LDA to identify themes and cluster structure.',
+      'portfolio.p3.result': 'Improved clustering quality and supported better retrieval logic for news search optimization.',
+      'contact.label': 'Contact',
+      'contact.title': 'Get In Touch',
+      'contact.sub': 'Open to data roles, collaborations, and meaningful conversations.',
+      'contact.panel': 'Best for',
+      'contact.panel.copy': 'Data Analyst opportunities, research collaborations, and conversations around structured data, modeling, and analytics systems.',
+      'contact.name': 'Full name',
+      'contact.name.ph': 'Your name',
+      'contact.email': 'Email address',
+      'contact.subject': 'Subject',
+      'contact.subject.ph': 'What\'s on your mind?',
+      'contact.message': 'Write your message here',
+      'contact.message.ph': 'Write your message here...',
+      'contact.send': 'Send Message ✉️',
+      'contact.action.email': 'Email Me',
+      'contact.action.linkedin': 'LinkedIn',
+      'contact.action.phone': 'Call',
+      'footer.text': '© 2026 Yang Qirui · Built with ❤️'
+    },
+    zh: {
+      'nav.about': '关于我',
+      'nav.experience': '工作经历',
+      'nav.skills': '技能',
+      'nav.portfolio': '项目',
+      'nav.contact': '联系方式',
+      'hero.greeting': '你好，我是',
+      'hero.name': '杨淇瑞',
+      'hero.alias': '无名',
+      'hero.role': '// 数据分析师 · 研究助理 · 新加坡',
+      'hero.tagline': '一名<span>数据分析师 &amp; 研究助理</span>，热衷于将杂乱的大规模数据转化为清晰、可落地的洞察 — 涵盖引文网络到能耗基准预测。',
+      'hero.cta1': '查看我的项目',
+      'hero.cta2': '联系我',
+      'tech.label': '技术栈',
+      'about.label': '关于我',
+      'about.title': '关于我',
+      'about.p1': '我擅长把零散、复杂、难以直接使用的数据，转化成<span>真正能支持研究、建模和决策的结构化系统</span>。',
+      'about.p2': '在 <span>SUTD</span>，我负责构建和分析<span>大规模结构化数据集</span>，从作者消歧到引文网络、合著网络建模，使用 Python 和 SQL 挖掘可解释的合作模式与研究结构。',
+      'about.p3': '我的工作位于<span>数据工程、数据分析与应用建模</span>的交叉点上，覆盖 17 本期刊、20 年学术数据，以及准确率达到 <span>93%</span> 的能耗基准预测系统。',
+      'about.p4': '基于我在 SUTD 的<span>工程系统与设计</span>背景，并通过<span>MOE SM2 奖学金</span>项目入学，我正在寻找一份<span>数据分析师</span>岗位，把复杂问题转化为清晰、可靠、可落地的洞察。',
+      'about.badge.lang': '🌐 中英双语',
+      'about.badge.open': '📊 求职中',
+      'about.contact': '联系我 ✉️',
+      'exp.label': '工作经历',
+      'exp.title': '经历与项目时间线',
+      'exp.t1.role': 'SUTD · 工程系统与设计',
+      'exp.t1.period': '2018 - 2024',
+      'exp.t1.org': '新加坡科技设计大学',
+      'exp.t1.loc': '新加坡',
+      'exp.t1.b1': '在 SUTD 完成<strong>工程系统与设计</strong>本科阶段学习。',
+      'exp.t1.b2': '通过<strong>MOE SM2 奖学金</strong>项目进入 SUTD，该奖学金基于入学前的优异学术表现授予。',
+      'exp.t2.role': '本科生科研机会项目',
+      'exp.t2.period': '2018年1月 - 2019年1月',
+      'exp.t2.org': '科研训练',
+      'exp.t2.loc': '新加坡',
+      'exp.t2.b1': '围绕绘画真伪识别开展<strong>图像去噪</strong>与<strong>像素级特征</strong>分析。',
+      'exp.t2.b2': '使用 <strong>Python</strong> 搭建早期分析流程，为后续研究与数据建模工作打下基础。',
+      'exp.t3.role': '浙江大学交换科研项目',
+      'exp.t3.period': '2019年5月 - 2019年8月',
+      'exp.t3.org': '交换科研项目',
+      'exp.t3.loc': '中国杭州',
+      'exp.t3.b1': '设计并执行 <strong>20+</strong> 人实验，将 EEG / Kinect 数据整理为多模态结构化数据。',
+      'exp.t3.b2': '积累了实验设计、多模态预处理与早期神经网络建模的实际经验。',
+      'exp.t4.role': '搜索结果优化 · Ernst &amp; Young',
+      'exp.t4.period': '2019年9月 - 2019年12月',
+      'exp.t4.org': '校企合作项目',
+      'exp.t4.loc': '新加坡',
+      'exp.t4.b1': '使用 Python 与 <strong>LDA</strong> 分析 <strong>10,000+</strong> 篇新闻文章，提升聚类与搜索质量。',
+      'exp.t4.b2': '通过主题建模识别内容主题，支持更好的文档分组与搜索相关性优化。',
+      'exp.t5.role': 'Business Analytics &amp; Operations Research 方向',
+      'exp.t5.period': '2020年 - 2023年',
+      'exp.t5.org': 'SUTD · 高阶课程训练',
+      'exp.t5.loc': '新加坡',
+      'exp.t5.b1': '完成 <strong>商业分析与运筹学</strong> 方向课程，内容包括<strong>高级优化专题</strong>、<strong>高级随机建模专题</strong>、<strong>统计机器学习</strong>与<strong>博弈论</strong>。',
+      'exp.t5.b2': '为后续预测系统、分析工作流与数据驱动决策支持建立了扎实的方法基础。',
+      'exp.t6.role': '能耗预测模型 · Beez-Fm',
+      'exp.t6.period': '2023年8月 - 2024年5月',
+      'exp.t6.org': '应用建模项目',
+      'exp.t6.loc': '新加坡',
+      'exp.t6.b1': '开发数据驱动的能耗 benchmark 系统，用于节能合同中的定价与谈判支持。',
+      'exp.t6.b2': '为 <strong>20+</strong> 客户整合设备、客流、订单、水电与天气等多源数据。',
+      'exp.t6.b3': '使用<strong>随机森林</strong>与<strong>梯度提升树</strong>构建模型，准确率最高达到 <strong>93%</strong>。',
+      'exp.t6.b4': '设计轻量级 <strong>HTML/CSS</strong> Web 界面，用于 benchmark 生成与可视化展示。',
+      'exp.t7.role': '研究助理 / Research Engineer · SUTD',
+      'exp.t7.period': '2025年2月 - 至今',
+      'exp.t7.org': '新加坡科技设计大学',
+      'exp.t7.loc': '新加坡',
+      'exp.t7.b1': '使用 Python 从零构建覆盖 <strong>17 本期刊</strong>、跨越 <strong>20 年</strong>的大规模结构化数据集。',
+      'exp.t7.b2': '主导数据清洗与实体解析，包括作者消歧，以提升数据一致性与分析可靠性。',
+      'exp.t7.b3': '使用 <strong>Python</strong> 与 <strong>SQL</strong> 构建合著网络、引文网络等关系型数据集。',
+      'exp.t7.b4': '应用聚类与网络分析方法，并结合真实研究合作结构进行验证。',
+      'exp.t7.b5': '借助可视化工具与可复现工作流，产出关于合作模式的可解释洞察。',
+      'skills.label': '技能',
+      'skills.title': '我能做什么',
+      'skills.s1': '数据分析',
+      'skills.s2': '机器学习',
+      'skills.s3': '网络分析',
+      'skills.s4': '数据清洗',
+      'portfolio.label': '项目作品',
+      'portfolio.title': '精选项目',
+      'portfolio.details': '详情 →',
+      'portfolio.did': '做了什么',
+      'portfolio.used': '用了什么',
+      'portfolio.result': '结果是什么',
+      'portfolio.p1.title': '共引网络分析',
+      'portfolio.p1.desc': '从零构建跨越20年、17本期刊的结构化数据集，搭建合著与引文网络，通过聚类与网络分析揭示学术合作规律。',
+      'portfolio.p1.loc': '新加坡',
+      'portfolio.p1.did': '构建覆盖 17 本期刊、20 年学术记录的合著与引文网络结构化数据集。',
+      'portfolio.p1.used': '使用 Python、SQL 与 MATLAB 完成数据清洗、实体解析、关系建模、聚类与网络分析。',
+      'portfolio.p1.result': '提炼出可解释的合作模式，并形成可复用的学术网络研究数据基础。',
+      'project.network.label': '项目详情',
+      'project.network.title': '合著与引文网络分析',
+      'project.network.lead': '基于 17 本期刊、20 年学术记录，构建了大规模合著网络与引文网络数据集。使用 Python、SQL 与 MATLAB 将碎片化原始数据转化为结构化关系网络，并完成数据清洗、聚类、网络分析与可解释洞察提炼。',
+      'project.network.m1.label': '规模',
+      'project.network.m1.value': '17 本期刊',
+      'project.network.m1.note': '跨期刊学术记录被整合为统一的结构化数据集。',
+      'project.network.m2.label': '时间跨度',
+      'project.network.m2.value': '20 年',
+      'project.network.m2.note': '基于长期发表与引文数据分析合作关系随时间演化的模式。',
+      'project.network.m3.label': '技术栈',
+      'project.network.m3.value': 'Python / SQL / MATLAB',
+      'project.network.m3.note': '覆盖数据清洗、关系建模、聚类与结构分析等完整流程。',
+      'project.network.k1': '项目构建',
+      'project.network.copy1': '项目起点是分散在多个期刊与年份中的碎片化学术记录。我先将其整理为结构化数据集，再进一步构建合著网络与引文网络，使其能够支持后续的大规模关系分析。',
+      'project.network.k2': '方法流程',
+      'project.network.l1': '清洗噪声数据，并处理作者身份不一致等实体解析问题。',
+      'project.network.l2': '构建关系型与矩阵型网络表示，用于后续结构分析。',
+      'project.network.l3': '结合聚类与网络分析方法提炼可解释的合作结构。',
+      'project.network.k3': '项目价值',
+      'project.network.copy2': '这个项目不再把论文看成孤立记录，而是把它们放回到相互连接的研究网络中，从而可以更系统地观察研究社群、合作动态与结构模式。',
+      'project.network.k4': '最终产出',
+      'project.network.copy3': '最终形成了一套可复用的网络数据集与分析流程，能够支持更大规模的学术网络研究、合作模式识别与后续实验分析。',
+      'portfolio.p2.title': '能耗基准预测系统',
+      'portfolio.p2.desc': '为20余家客户开发数据驱动的能耗基准系统，整合多源数据集并构建机器学习模型，准确率达 93%。',
+      'portfolio.p2.loc': '新加坡',
+      'portfolio.p2.did': '开发数据驱动的能耗 benchmark 系统，用于节能合同中的定价与谈判支持。',
+      'portfolio.p2.used': '整合多源运营数据，并使用 Python、随机森林、GBT 与 HTML/CSS 完成建模与展示。',
+      'portfolio.p2.result': '模型准确率达到 93%，并交付轻量级 benchmark 生成与可视化流程。',
+      'portfolio.p3.title': '搜索结果优化',
+      'portfolio.p3.desc': '为 Ernst & Young 分析10,000+ 篇新闻文章，使用主题建模（LDA）提升文档聚类质量和搜索相关性。',
+      'portfolio.p3.loc': '新加坡',
+      'portfolio.p3.did': '在校企合作项目中分析 10,000+ 篇新闻文章，提升文档分组与搜索相关性。',
+      'portfolio.p3.used': '使用 Python 进行文本预处理，并结合 LDA 主题建模识别主题与聚类结构。',
+      'portfolio.p3.result': '提升了聚类质量，并支持更合理的新闻检索逻辑优化。',
+      'contact.label': '联系方式',
+      'contact.title': '与我联系',
+      'contact.sub': '欢迎联系我，聊工作机会、合作项目，或任何值得深入交流的话题。',
+      'contact.panel': '适合联系',
+      'contact.panel.copy': '欢迎交流数据分析岗位、研究合作，以及任何关于结构化数据、建模和分析系统的话题。',
+      'contact.name': '姓名',
+      'contact.name.ph': '你的名字',
+      'contact.email': '邮箱地址',
+      'contact.subject': '主题',
+      'contact.subject.ph': '你想聊什么？',
+      'contact.message': '请在这里写下你的留言',
+      'contact.message.ph': '在这里写下你的留言...',
+      'contact.send': '发送消息 ✉️',
+      'contact.action.email': '发邮件',
+      'contact.action.linkedin': '领英',
+      'contact.action.phone': '电话',
+      'footer.text': '© 2026 杨淇瑞 · 用 ❤️ 构建'
+    }
+  };
+  let currentLang = localStorage.getItem('lang') || 'en';
+
+  function stabilizeI18nLayout(){
+    const langs = ['en', 'zh'];
+    const widthLocked = new Set(['A', 'BUTTON']);
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if(!key) return;
+      const original = el.innerHTML;
+      let maxHeight = 0;
+      let maxWidth = 0;
+
+      langs.forEach(lang => {
+        const value = translations[lang]?.[key];
+        if (value === undefined) return;
+        el.innerHTML = value;
+        maxHeight = Math.max(maxHeight, el.offsetHeight);
+        maxWidth = Math.max(maxWidth, el.offsetWidth);
+      });
+
+      el.innerHTML = original;
+
+      if (maxHeight > 0) el.style.minHeight = `${maxHeight}px`;
+      if (widthLocked.has(el.tagName)) el.style.minWidth = `${maxWidth}px`;
+    });
+  }
+
+  function captureHeroAnchor(){
+    if(!heroAvatar) return;
+    const avatarRect=heroAvatar.getBoundingClientRect();
+    heroAnchor={
+      x: avatarRect.left + avatarRect.width / 2,
+      y: avatarRect.top + avatarRect.height / 2
+    };
+  }
+
+  function applyAvatarBackdropColor(){
+    const img = new Image();
+    img.addEventListener('load', () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      if(!ctx) return;
+
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+
+      const sampleBoxes = [
+        [0, 0, 120, 120],
+        [img.naturalWidth - 120, 0, 120, 120],
+        [0, img.naturalHeight - 120, 120, 120],
+        [img.naturalWidth - 120, img.naturalHeight - 120, 120, 120]
+      ];
+
+      let totalR = 0;
+      let totalG = 0;
+      let totalB = 0;
+      let count = 0;
+
+      sampleBoxes.forEach(([x, y, w, h]) => {
+        const data = ctx.getImageData(Math.max(0, x), Math.max(0, y), Math.min(w, img.naturalWidth), Math.min(h, img.naturalHeight)).data;
+        for(let i = 0; i < data.length; i += 4){
+          totalR += data[i];
+          totalG += data[i + 1];
+          totalB += data[i + 2];
+          count += 1;
+        }
+      });
+
+      if(!count) return;
+
+      const avgR = Math.round(totalR / count);
+      const avgG = Math.round(totalG / count);
+      const avgB = Math.round(totalB / count);
+
+      const darken = (value, factor = 0.78) => Math.max(8, Math.round(value * factor));
+      document.documentElement.style.setProperty('--avatar-bg', `rgb(${darken(avgR)}, ${darken(avgG)}, ${darken(avgB)})`);
+    });
+    img.src = 'avatar_1.jpg';
+  }
+
+  function updateHeroCatFollow(){
+    if(!heroAvatar || !heroCat){
+      return;
+    }
+
+    if(!heroAnchor){
+      captureHeroAnchor();
+    }
+
+    if(cur!==0){
+      if(heroCat){
+        heroCat.style.setProperty('--follow-x','0px');
+        heroCat.style.setProperty('--follow-y','0px');
+      }
+      return;
+    }
+
+    const heroRect=hero.getBoundingClientRect();
+    if(heroRect.bottom <= 0 || heroRect.top >= window.innerHeight){
+      heroCat.style.setProperty('--follow-x','0px');
+      heroCat.style.setProperty('--follow-y','0px');
+      return;
+    }
+
+    const avatarRect=heroAvatar.getBoundingClientRect();
+    const centerX=avatarRect.left + avatarRect.width / 2;
+    const centerY=avatarRect.top + avatarRect.height / 2;
+
+    heroCat.style.setProperty('--follow-x', `${(centerX - heroAnchor.x) * heroFollowSpeed}px`);
+    heroCat.style.setProperty('--follow-y', `${(centerY - heroAnchor.y) * heroFollowSpeed}px`);
+  }
+
+  window.addEventListener('scroll',()=>{
+    scrollDir=window.scrollY>=lastSY?1:-1;
+    lastSY=window.scrollY;
+    updateHeroCatFollow();
+    updateCatHover(-1, -1);
+  },{passive:true});
+  window.addEventListener('resize',()=>{ captureHeroAnchor(); updateHeroCatFollow(); });
+  window.addEventListener('mousemove', event => {
+    updateCatHover(event.clientX, event.clientY);
+  });
+
+  function switchCat(next){
+    if(next===cur) return;
+    const oldEl=catImgs[cur], newEl=catImgs[next];
+
+    const xOffset = scrollDir > 0 ? 18 : -18;
+    const yOffset = scrollDir > 0 ? 24 : -24;
+
+    if(oldEl){
+      oldEl.style.setProperty('--motion-x', `${-xOffset}px`);
+      oldEl.style.setProperty('--motion-y', `${-yOffset}px`);
+      oldEl.classList.remove('active');
+      window.setTimeout(()=>{
+        oldEl.style.setProperty('--motion-x', '0px');
+        oldEl.style.setProperty('--motion-y', '0px');
+      }, 820);
+    }
+
+    if(newEl){
+      newEl.style.setProperty('--motion-x', `${xOffset}px`);
+      newEl.style.setProperty('--motion-y', `${yOffset}px`);
+      requestAnimationFrame(()=>{
+        newEl.classList.add('active');
+        requestAnimationFrame(()=>{
+          newEl.style.setProperty('--motion-x', '0px');
+          newEl.style.setProperty('--motion-y', '0px');
+        });
+      });
+    }
+
+    dots[cur].classList.remove('active');
+    dots[next].classList.add('active');
+    cur=next;
+    catImgs.forEach(cat => cat?.classList.remove('hover-glow'));
+    updateCatScanReveal();
+    updateHeroCatFollow();
+  }
+
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){const idx=sections.indexOf(e.target.id);if(idx!==-1)switchCat(idx);}
+    });
+  },{threshold:0.45});
+  sections.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+
+  dots.forEach(d=>{
+    d.addEventListener('click',()=>{
+      document.getElementById(sections[+d.dataset.i]).scrollIntoView({behavior:'smooth'});
+    });
+  });
+
+  function applyLang(lang){
+    const t = translations[lang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.dataset.i18nPlaceholder;
+      if (t[key] !== undefined) el.placeholder = t[key];
+    });
+    const toggle = document.getElementById('langToggle');
+    if (toggle) toggle.textContent = lang === 'en' ? '中文' : 'English';
+    document.documentElement.lang = lang === 'en' ? 'en' : 'zh';
+  }
+
+  document.getElementById('langToggle')?.addEventListener('click', () => {
+    currentLang = currentLang === 'en' ? 'zh' : 'en';
+    localStorage.setItem('lang', currentLang);
+    applyLang(currentLang);
+  });
+
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  window.handleSubmit = function handleSubmit(event){
+    event.preventDefault();
+    window.location = 'mailto:yangqiruisutd@gmail.com';
+  };
+
+  applyAvatarBackdropColor();
+  stabilizeI18nLayout();
+  applyLang(currentLang);
+  resize();
+  captureHeroAnchor();
+  updateHeroCatFollow();
+  drawBg();
+})();
+</script>
+</body>
+</html>
