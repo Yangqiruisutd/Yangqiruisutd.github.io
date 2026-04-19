@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Energy Benchmark Prediction System</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #00f5c4; --purple: #b464ff; --blue: #378add; --amber: #ffb400; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 20%, rgba(0,245,196,0.09), transparent 26%),
+    radial-gradient(circle at 88% 14%, rgba(180,100,255,0.11), transparent 28%),
+    radial-gradient(circle at 60% 80%, rgba(55,138,221,0.07), transparent 30%),
+    linear-gradient(180deg, #080a12, #090910 45%, #05070d);
+  color: #fff;
+  font-family: 'Inter', 'Helvetica Neue', -apple-system, sans-serif;
+}
+
+/* ── Nav ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 48px; height: 64px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.07);
+  background: rgba(9,9,16,0.88); backdrop-filter: blur(14px);
+}
+.back-link {
+  height: 34px; padding: 0 14px; border-radius: 999px;
+  display: inline-flex; align-items: center;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.back-link:hover { color: var(--teal); border-color: rgba(0,245,196,0.3); background: rgba(0,245,196,0.06); }
+.lang-toggle {
+  height: 34px; padding: 0 14px; border-radius: 999px;
+  display: inline-flex; align-items: center;
+  border: 1px solid rgba(0,245,196,0.24);
+  background: rgba(0,245,196,0.06);
+  color: rgba(0,245,196,0.82);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px; cursor: pointer;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.lang-toggle:hover { color: #fff; }
+
+/* ── Shell ── */
+.page-shell {
+  width: min(1120px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 96px 0 80px;
+}
+
+/* ── Typography ── */
+.eyebrow {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(0,245,196,0.72);
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+}
+.title {
+  font-size: clamp(32px, 4.5vw, 54px);
+  line-height: 1.03; text-transform: uppercase; letter-spacing: -0.04em;
+}
+.lead {
+  max-width: 820px; color: rgba(255,255,255,0.68); line-height: 1.75;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.kicker {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(180,100,255,0.72);
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  margin-bottom: 12px;
+}
+.kicker.teal { color: rgba(0,245,196,0.72); }
+.kicker.blue { color: rgba(55,138,221,0.72); }
+.kicker.amber { color: rgba(255,180,0,0.72); }
+.section-title {
+  font-size: 18px; font-weight: 700; letter-spacing: -0.02em;
+  color: rgba(255,255,255,0.9); margin-bottom: 14px;
+}
+.copy {
+  color: rgba(255,255,255,0.62); line-height: 1.72;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+}
+
+/* ── Tags ── */
+.tags { display: flex; gap: 10px; flex-wrap: wrap; }
+.tag {
+  font-size: 12px; padding: 6px 14px; border-radius: 999px;
+  border: 1px solid rgba(0,245,196,0.18);
+  background: rgba(0,245,196,0.06);
+  color: rgba(98,232,255,0.92);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── Panel / Card ── */
+.panel {
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(0,245,196,0.07), transparent 42%),
+    rgba(7,10,18,0.72);
+  border-radius: 20px; padding: 24px 28px;
+  box-shadow: 0 14px 34px rgba(2,4,12,0.28);
+}
+.panel.purple-glow {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(180,100,255,0.09), transparent 42%),
+    rgba(7,10,18,0.72);
+  border-color: rgba(180,100,255,0.12);
+}
+.panel.blue-glow {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(55,138,221,0.09), transparent 42%),
+    rgba(7,10,18,0.72);
+  border-color: rgba(55,138,221,0.12);
+}
+.panel.amber-glow {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(255,180,0,0.07), transparent 42%),
+    rgba(7,10,18,0.72);
+  border-color: rgba(255,180,0,0.15);
+}
+
+/* ── Metrics ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px; margin: 28px 0;
+}
+.metric {
+  border: 1px solid rgba(255,255,255,0.08);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02)),
+    radial-gradient(circle at top, rgba(0,245,196,0.08), transparent 42%),
+    rgba(7,10,18,0.72);
+  border-radius: 20px; padding: 20px;
+  box-shadow: 0 14px 34px rgba(2,4,12,0.28);
+}
+.metric-label {
+  font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(0,245,196,0.62);
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  margin-bottom: 10px;
+}
+.metric-value {
+  font-size: clamp(20px, 2.8vw, 32px); line-height: 1;
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  color: rgba(98,232,255,0.94);
+}
+.metric-note {
+  margin-top: 10px; color: rgba(255,255,255,0.5); line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+}
+
+/* ── Spacers ── */
+.section { margin-top: 36px; }
+.gap-sm { margin-top: 18px; }
+
+/* ── Two-col grid ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+
+/* ── List ── */
+.list { list-style: none; display: grid; gap: 9px; }
+.list li {
+  position: relative; padding-left: 16px;
+  color: rgba(255,255,255,0.65); line-height: 1.65;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+}
+.list li::before { content: "▸"; position: absolute; left: 0; color: rgba(0,245,196,0.75); }
+.list.purple li::before { color: rgba(180,100,255,0.75); }
+.list.blue li::before { color: rgba(55,138,221,0.75); }
+
+/* ── Challenge / Solution split ── */
+.split-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+}
+.split-icon {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.split-icon.red   { background: rgba(255,80,100,0.12); }
+.split-icon.green { background: rgba(0,245,196,0.10); }
+.split-label {
+  font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+}
+.split-icon.red   + .split-label { color: rgba(255,100,120,0.8); }
+.split-icon.green + .split-label { color: rgba(0,245,196,0.8); }
+
+/* ── Pipeline / Workflow ── */
+.pipeline {
+  display: flex; align-items: center; gap: 0;
+  flex-wrap: nowrap; overflow-x: auto;
+  padding: 4px 0 8px;
+}
+.pipe-node {
+  flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.03);
+  min-width: 120px; text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+}
+.pipe-node:hover, .pipe-node.active {
+  border-color: rgba(0,245,196,0.3);
+  background: rgba(0,245,196,0.06);
+}
+.pipe-node-num {
+  font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(0,245,196,0.6); margin-bottom: 4px;
+}
+.pipe-node-name {
+  font-size: 12px; font-weight: 600;
+  color: rgba(255,255,255,0.82); letter-spacing: -0.01em;
+}
+.pipe-arrow {
+  flex-shrink: 0; width: 28px; height: 2px;
+  background: linear-gradient(to right, rgba(0,245,196,0.25), rgba(0,245,196,0.1));
+  position: relative;
+}
+.pipe-arrow::after {
+  content: ''; position: absolute; right: -1px; top: -3px;
+  width: 0; height: 0;
+  border-top: 4px solid transparent; border-bottom: 4px solid transparent;
+  border-left: 6px solid rgba(0,245,196,0.35);
+}
+.pipe-details {
+  display: none; margin-top: 16px;
+}
+.pipe-details.visible { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.pipe-detail-card {
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.025);
+}
+.pipe-detail-card .label {
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(0,245,196,0.6); margin-bottom: 6px;
+}
+.pipe-detail-card .body {
+  font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── Accuracy chart ── */
+.accuracy-chart { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+.acc-row { display: flex; align-items: center; gap: 14px; }
+.acc-label {
+  width: 80px; flex-shrink: 0; font-size: 11px;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  letter-spacing: 0.06em; text-transform: uppercase;
+}
+.acc-bar-wrap {
+  flex: 1; height: 28px; border-radius: 6px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden; position: relative;
+}
+.acc-bar {
+  height: 100%; border-radius: 6px;
+  display: flex; align-items: center; padding-left: 10px;
+  font-size: 12px; font-family: 'Orbitron', sans-serif;
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.acc-bar.before {
+  background: linear-gradient(90deg, rgba(255,80,100,0.55), rgba(255,80,100,0.3));
+  color: rgba(255,150,160,0.9);
+}
+.acc-bar.after {
+  background: linear-gradient(90deg, rgba(0,245,196,0.55), rgba(0,245,196,0.3));
+  color: rgba(0,245,196,0.95);
+}
+.acc-delta {
+  font-size: 11px; font-family: 'Orbitron', sans-serif;
+  color: rgba(0,245,196,0.8); flex-shrink: 0; width: 52px; text-align: right;
+}
+
+/* ── Video thumbnail ── */
+.video-thumb-link { display: block; margin-top: 16px; text-decoration: none; }
+.video-wrap {
+  position: relative; padding-bottom: 56.25%; height: 0;
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(7,10,18,0.8);
+}
+.video-play-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 12px;
+  background: rgba(5,7,14,0.42);
+  transition: background .2s;
+}
+.video-thumb-link:hover .video-play-overlay { background: rgba(5,7,14,0.22); }
+.video-play-btn {
+  width: 60px; height: 60px; border-radius: 50%;
+  background: rgba(0,245,196,0.15);
+  border: 1.5px solid rgba(0,245,196,0.4);
+  display: flex; align-items: center; justify-content: center;
+  transition: background .2s, transform .2s;
+  padding-left: 4px;
+}
+.video-thumb-link:hover .video-play-btn {
+  background: rgba(0,245,196,0.28);
+  transform: scale(1.08);
+}
+.video-play-label {
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ── Impact chips ── */
+.impact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+.impact-card {
+  border: 1px solid rgba(0,245,196,0.12);
+  border-radius: 14px; padding: 16px 18px;
+  background: rgba(0,245,196,0.04);
+}
+.impact-icon { font-size: 18px; margin-bottom: 8px; }
+.impact-title {
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85);
+  margin-bottom: 4px; letter-spacing: -0.01em;
+}
+.impact-desc {
+  font-size: 11.5px; color: rgba(255,255,255,0.48); line-height: 1.55;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── Role timeline ── */
+.role-list { display: grid; gap: 12px; margin-top: 4px; }
+.role-item {
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.role-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(0,245,196,0.7);
+  flex-shrink: 0; margin-top: 5px;
+  box-shadow: 0 0 8px rgba(0,245,196,0.4);
+}
+.role-text {
+  font-size: 13px; color: rgba(255,255,255,0.65); line-height: 1.65;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.role-text strong { color: rgba(255,255,255,0.88); font-weight: 600; }
+
+/* ── Leadership Pipeline ── */
+.leadership-section { margin-top: 36px; }
+.lp-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-top: 16px;
+  align-items: start;
+}
+.lp-pipeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.lp-step {
+  display: flex;
+  gap: 0;
+  position: relative;
+}
+.lp-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 44px;
+  flex-shrink: 0;
+}
+.lp-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,245,196,0.35);
+  background: rgba(0,245,196,0.07);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-family: 'Orbitron', sans-serif;
+  color: rgba(0,245,196,0.85);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+.lp-line {
+  width: 1px;
+  flex: 1;
+  min-height: 24px;
+  background: linear-gradient(to bottom, rgba(0,245,196,0.25), rgba(0,245,196,0.08));
+}
+.lp-step:last-child .lp-line { display: none; }
+.lp-content {
+  padding: 4px 0 28px 16px;
+}
+.lp-title {
+  font-size: 13px; font-weight: 700;
+  color: rgba(255,255,255,0.9);
+  letter-spacing: -0.01em;
+  margin-bottom: 3px;
+}
+.lp-desc {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.55;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.lp-step:last-child .lp-content { padding-bottom: 0; }
+/* Highlights */
+.lp-highlights { display: flex; flex-direction: column; gap: 10px; }
+.lp-highlight {
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.025);
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.lp-highlight-bar {
+  width: 3px; border-radius: 2px; flex-shrink: 0;
+  margin-top: 2px; min-height: 36px;
+  background: linear-gradient(to bottom, rgba(0,245,196,0.7), rgba(0,245,196,0.2));
+}
+.lp-highlight-body {}
+.lp-highlight-label {
+  font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(0,245,196,0.6); margin-bottom: 4px;
+}
+.lp-highlight-text {
+  font-size: 12px;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.lp-highlight-text strong { color: rgba(255,255,255,0.88); }
+/* Core message */
+.lp-message {
+  margin-top: 24px;
+  border: 1px solid rgba(0,245,196,0.15);
+  border-radius: 14px;
+  padding: 18px 22px;
+  background: rgba(0,245,196,0.03);
+  font-size: 13px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.75;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-style: italic;
+  position: relative;
+}
+.lp-message::before {
+  content: '"';
+  font-size: 40px; line-height: 1;
+  color: rgba(0,245,196,0.2);
+  font-family: Georgia, serif;
+  position: absolute; top: 10px; left: 16px;
+  font-style: normal;
+}
+.lp-message-text { padding-left: 22px; }
+@media (max-width: 900px) {
+  .lp-wrap { grid-template-columns: 1fr; }
+}
+/* ── Takeaway ── */
+.takeaway {
+  margin-top: 36px;
+  border: 1px solid rgba(0,245,196,0.18);
+  border-radius: 20px; padding: 28px 32px;
+  background:
+    linear-gradient(135deg, rgba(0,245,196,0.06), rgba(55,138,221,0.04)),
+    rgba(7,10,18,0.72);
+  box-shadow: 0 0 40px rgba(0,245,196,0.06), 0 14px 34px rgba(2,4,12,0.28);
+  position: relative; overflow: hidden;
+}
+.takeaway::before {
+  content: '';
+  position: absolute; top: -1px; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0,245,196,0.4), transparent);
+}
+.takeaway-label {
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(0,245,196,0.65); margin-bottom: 10px;
+}
+.takeaway-text {
+  font-size: 15px; color: rgba(255,255,255,0.78); line-height: 1.8;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .nav { padding: 0 20px; }
+  .page-shell { width: min(1120px, calc(100% - 28px)); }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .grid-3 { grid-template-columns: 1fr; }
+  .impact-grid { grid-template-columns: 1fr; }
+  .pipeline { gap: 0; }
+}
+@media (max-width: 600px) {
+  .metrics { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="back-link" href="index.html#portfolio" data-i18n="nav.back">← Back to Projects</a>
+  <button class="lang-toggle" id="langToggle" type="button">中文</button>
+</nav>
+
+<div class="page-shell">
+
+  <!-- ── Hero ── -->
+  <section style="display:grid;gap:16px;margin-bottom:28px;">
+    <p class="eyebrow" data-i18n="hero.label">Industry Collaboration · Data Science</p>
+    <h1 class="title" data-i18n="hero.title">Energy Benchmark<br>Prediction System</h1>
+    <p class="lead" data-i18n="hero.lead">Counterfactual baseline modeling for pricing and risk control in energy-saving contracts — improving prediction accuracy from ~70% to ~93% across heterogeneous building portfolios in Southeast Asia.</p>
+    <div class="tags">
+      <span class="tag">Python</span>
+      <span class="tag">Random Forest</span>
+      <span class="tag">Gradient Boosting</span>
+      <span class="tag" data-i18n="tag1">Feature Engineering</span>
+      <span class="tag">HTML/CSS</span>
+      <span class="tag">Notion</span>
+    </div>
+  </section>
+
+  <!-- ── Metrics ── -->
+  <section class="metrics">
+    <div class="metric">
+      <div class="metric-label" data-i18n="m1.label">Accuracy</div>
+      <div class="metric-value">93%</div>
+      <p class="metric-note" data-i18n="m1.note">Up from ~70% baseline — enabling reliable pricing and contract negotiation</p>
+    </div>
+    <div class="metric">
+      <div class="metric-label" data-i18n="m2.label">Regions</div>
+      <div class="metric-value">3</div>
+      <p class="metric-note" data-i18n="m2.note">Thailand · Philippines · Australia — multi-format, multi-language data</p>
+    </div>
+    <div class="metric">
+      <div class="metric-label" data-i18n="m3.label">Building Types</div>
+      <div class="metric-value">3+</div>
+      <p class="metric-note" data-i18n="m3.note">Schools · F&amp;B · Hotels — single unified model across all types</p>
+    </div>
+    <div class="metric">
+      <div class="metric-label" data-i18n="m4.label">Role</div>
+      <div class="metric-value" style="font-size:clamp(14px,1.8vw,20px);padding-top:4px" data-i18n="m4.value">Lead</div>
+      <p class="metric-note" data-i18n="m4.note">End-to-end ownership: data cleaning → modeling → front-end system</p>
+    </div>
+  </section>
+
+  <!-- ── Problem ── -->
+  <section class="section">
+    <div class="panel purple-glow">
+      <div class="kicker" data-i18n="prob.kicker">Problem Statement</div>
+      <div class="section-title" data-i18n="prob.title">The Business Challenge</div>
+      <p class="copy" data-i18n="prob.copy">Energy-saving contracts (ESCs) require an accurate estimate of how much energy a building <em style="color:rgba(255,255,255,0.8)">would have consumed</em> without intervention — the counterfactual baseline. This number directly determines contract pricing and risk allocation. Without a reliable model, both sides are exposed to financial loss.</p>
+      <ul class="list purple" style="margin-top:16px">
+        <li data-i18n="prob.l1">Buildings are highly heterogeneous — schools, restaurants, hotels each have fundamentally different consumption patterns</li>
+        <li data-i18n="prob.l2">Initial predictions hovered around 70%, making stable pricing structurally impossible</li>
+        <li data-i18n="prob.l3">Clients span multiple countries with inconsistent data formats and feature definitions</li>
+        <li data-i18n="prob.l4">Goal: build a scalable counterfactual energy model that generalizes across diverse building types and data sources</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Data Challenges ── -->
+  <section class="section">
+    <div class="kicker" data-i18n="data.kicker">Data Challenges</div>
+    <div class="grid-2">
+      <div class="panel">
+        <div class="split-header">
+          <div class="split-icon red">✕</div>
+          <div class="split-label" data-i18n="data.challenge">Raw Data Problems</div>
+        </div>
+        <ul class="list" style="gap:8px">
+          <li data-i18n="data.c1">PDF and CSV formats mixed across clients</li>
+          <li data-i18n="data.c2">Inconsistent feature naming — same variable called differently per client</li>
+          <li data-i18n="data.c3">Missing and incomplete records throughout</li>
+          <li data-i18n="data.c4">Different feature sets available per building</li>
+          <li data-i18n="data.c5">No unified schema — each dataset effectively its own island</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <div class="split-header">
+          <div class="split-icon green">✓</div>
+          <div class="split-label" data-i18n="data.solution">How It Was Resolved</div>
+        </div>
+        <ul class="list" style="gap:8px">
+          <li data-i18n="data.s1">Standardized all inputs into a unified feature schema</li>
+          <li data-i18n="data.s2">Built a structured relational database across clients</li>
+          <li data-i18n="data.s3">Systematically identified missing fields and coordinated targeted data collection with clients</li>
+          <li data-i18n="data.s4">Remaining unavoidable gaps encoded as NA — handled natively by tree models</li>
+          <li data-i18n="data.s5">Feature importance analysis used to remove redundant and correlated variables</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Pipeline ── -->
+  <section class="section">
+    <div class="kicker teal" data-i18n="pipe.kicker">System Pipeline</div>
+    <div class="panel" style="padding:22px 24px">
+      <div class="pipeline" id="pipeline">
+        <div class="pipe-node active" data-step="0" onclick="showStep(0)">
+          <div class="pipe-node-num" data-i18n="pipe.s0.num">01</div>
+          <div class="pipe-node-name" data-i18n="pipe.s0.name">Raw Data</div>
+        </div>
+        <div class="pipe-arrow"></div>
+        <div class="pipe-node" data-step="1" onclick="showStep(1)">
+          <div class="pipe-node-num" data-i18n="pipe.s1.num">02</div>
+          <div class="pipe-node-name" data-i18n="pipe.s1.name">Cleaning</div>
+        </div>
+        <div class="pipe-arrow"></div>
+        <div class="pipe-node" data-step="2" onclick="showStep(2)">
+          <div class="pipe-node-num" data-i18n="pipe.s2.num">03</div>
+          <div class="pipe-node-name" data-i18n="pipe.s2.name">Feature Eng.</div>
+        </div>
+        <div class="pipe-arrow"></div>
+        <div class="pipe-node" data-step="3" onclick="showStep(3)">
+          <div class="pipe-node-num" data-i18n="pipe.s3.num">04</div>
+          <div class="pipe-node-name" data-i18n="pipe.s3.name">Modeling</div>
+        </div>
+        <div class="pipe-arrow"></div>
+        <div class="pipe-node" data-step="4" onclick="showStep(4)">
+          <div class="pipe-node-num" data-i18n="pipe.s4.num">05</div>
+          <div class="pipe-node-name" data-i18n="pipe.s4.name">Validation</div>
+        </div>
+        <div class="pipe-arrow"></div>
+        <div class="pipe-node" data-step="5" onclick="showStep(5)">
+          <div class="pipe-node-num" data-i18n="pipe.s5.num">06</div>
+          <div class="pipe-node-name" data-i18n="pipe.s5.name">Deployment</div>
+        </div>
+      </div>
+      <div class="pipe-details visible" id="pipeDetails"></div>
+    </div>
+  </section>
+
+  <!-- ── Modeling ── -->
+  <section class="section">
+    <div class="kicker" data-i18n="model.kicker">Modeling Approach</div>
+    <div class="grid-3">
+      <div class="panel blue-glow">
+        <div class="kicker blue" style="margin-bottom:8px" data-i18n="model.k1">Algorithm</div>
+        <div class="section-title" style="font-size:15px;margin-bottom:10px" data-i18n="model.t1">Tree-Based Ensemble</div>
+        <p class="copy" data-i18n="model.c1">Random Forest and Gradient Boosted Trees — both natively handle missing values, non-linear feature interactions, and mixed-type inputs without requiring complete feature sets per sample.</p>
+      </div>
+      <div class="panel blue-glow">
+        <div class="kicker blue" style="margin-bottom:8px" data-i18n="model.k2">Heterogeneity</div>
+        <div class="section-title" style="font-size:15px;margin-bottom:10px" data-i18n="model.t2">One Model, All Buildings</div>
+        <p class="copy" data-i18n="model.c2">Building type encoded as a categorical feature. Missing columns passed as NA — the model learns to route predictions appropriately. A single unified model replaces the need for per-client custom models.</p>
+      </div>
+      <div class="panel blue-glow">
+        <div class="kicker blue" style="margin-bottom:8px" data-i18n="model.k3">Tuning</div>
+        <div class="section-title" style="font-size:15px;margin-bottom:10px" data-i18n="model.t3">Feature Selection &amp; Tuning</div>
+        <p class="copy" data-i18n="model.c3">Feature importance analysis removed redundant and correlated variables. Hyperparameter tuning (tree depth, number of estimators, learning rate) optimized for cross-client generalization.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Results ── -->
+  <section class="section">
+    <div class="kicker amber" data-i18n="res.kicker">Results</div>
+    <div class="grid-2">
+      <div class="panel amber-glow">
+        <div class="section-title" style="margin-bottom:6px" data-i18n="res.acc.title">Prediction Accuracy</div>
+        <p class="copy" style="margin-bottom:16px" data-i18n="res.acc.sub">Measured against held-out client data across building types</p>
+        <div class="accuracy-chart">
+          <div class="acc-row">
+            <div class="acc-label" style="color:rgba(255,100,120,0.8)" data-i18n="res.before">Before</div>
+            <div class="acc-bar-wrap">
+              <div class="acc-bar before" id="barBefore" style="width:0%">~70%</div>
+            </div>
+            <div class="acc-delta"></div>
+          </div>
+          <div class="acc-row">
+            <div class="acc-label" style="color:rgba(0,245,196,0.85)" data-i18n="res.after">After</div>
+            <div class="acc-bar-wrap">
+              <div class="acc-bar after" id="barAfter" style="width:0%">~93%</div>
+            </div>
+            <div class="acc-delta" style="color:rgba(0,245,196,0.8)">+23pp</div>
+          </div>
+        </div>
+        <ul class="list" style="margin-top:20px">
+          <li data-i18n="res.l1">More stable predictions across diverse building types</li>
+          <li data-i18n="res.l2">Reduced variance — consistent performance without per-client retraining</li>
+          <li data-i18n="res.l3">Model outputs directly integrated into pricing workflow</li>
+        </ul>
+      </div>
+      <div class="panel amber-glow">
+        <div class="section-title" style="margin-bottom:6px" data-i18n="res.vid.title">System Demo</div>
+        <p class="copy" style="margin-bottom:4px" data-i18n="res.vid.sub">Web-based interface — real-time benchmark generation for non-technical stakeholders</p>
+        <a class="video-thumb-link" href="https://www.youtube.com/watch?v=OgxqmsISDBU" target="_blank" rel="noopener" aria-label="Watch system demo on YouTube">
+          <div class="video-wrap" style="padding-bottom:62%;border-radius:12px;">
+            <img src="https://img.youtube.com/vi/OgxqmsISDBU/hqdefault.jpg" alt="System demo thumbnail" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;border-radius:12px;">
+            <div class="video-play-overlay">
+              <div class="video-play-btn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><polygon points="6,4 20,12 6,20" fill="white"/></svg>
+              </div>
+              <div class="video-play-label" data-i18n="res.vid.cta">Watch on YouTube</div>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Business Impact -->
+    <div class="gap-sm">
+      <div class="impact-grid">
+        <div class="impact-card">
+          <div class="impact-icon">◈</div>
+          <div class="impact-title" data-i18n="impact.t1">Pricing Reliability</div>
+          <p class="impact-desc" data-i18n="impact.d1">Contract prices grounded in statistically defensible baseline estimates — reducing negotiation friction and dispute risk</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-icon">◈</div>
+          <div class="impact-title" data-i18n="impact.t2">Financial Risk Reduction</div>
+          <p class="impact-desc" data-i18n="impact.d2">Higher accuracy translates directly to lower margin-of-error in energy savings claims — protecting both parties from contract underperformance</p>
+        </div>
+        <div class="impact-card">
+          <div class="impact-icon">◈</div>
+          <div class="impact-title" data-i18n="impact.t3">Stakeholder Transparency</div>
+          <p class="impact-desc" data-i18n="impact.d3">Web interface makes model outputs accessible to non-technical decision-makers — building trust in the prediction process</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Deployment ── -->
+  <section class="section">
+    <div class="panel">
+      <div class="kicker teal" data-i18n="deploy.kicker">System Deployment</div>
+      <div class="section-title" data-i18n="deploy.title">Web-Based Interface</div>
+      <p class="copy" style="margin-bottom:14px" data-i18n="deploy.copy">The prediction system was packaged into a lightweight web application — no technical background required to operate. Stakeholders input building parameters and receive benchmark estimates with supporting visualizations in real time.</p>
+      <ul class="list">
+        <li data-i18n="deploy.l1">Built in HTML/CSS — zero-dependency, runs in any browser</li>
+        <li data-i18n="deploy.l2">Real-time benchmark generation on parameter input</li>
+        <li data-i18n="deploy.l3">Prediction outputs visualized for clarity in contract discussions</li>
+        <li data-i18n="deploy.l4">Designed for use by non-technical client-facing teams</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Leadership ── -->
+  <section class="leadership-section">
+    <div class="kicker amber" data-i18n="lead.kicker">Leadership &amp; Project Ownership</div>
+    <div class="lp-wrap">
+
+      <!-- Left: vertical pipeline -->
+      <div>
+        <div class="lp-pipeline">
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">01</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s1.title">Business Requirement Understanding</div>
+              <div class="lp-desc" data-i18n="lead.s1.desc">Engaged directly with industry partner to surface ambiguous requirements and translate them into scoped, actionable objectives</div>
+            </div>
+          </div>
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">02</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s2.title">Technical Objective Mapping</div>
+              <div class="lp-desc" data-i18n="lead.s2.desc">Decomposed business goals into concrete modeling tasks, data requirements, and measurable success criteria</div>
+            </div>
+          </div>
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">03</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s3.title">Project Structuring &amp; Work Breakdown</div>
+              <div class="lp-desc" data-i18n="lead.s3.desc">Designed the full project structure — phases, milestones, dependencies, and task ownership — before any execution began</div>
+            </div>
+          </div>
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">04</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s4.title">Cross-Team Coordination</div>
+              <div class="lp-desc" data-i18n="lead.s4.desc">Managed ongoing alignment between the research team and industry partner across data handoffs, feedback cycles, and scope changes</div>
+            </div>
+          </div>
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">05</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s5.title">Meeting Facilitation &amp; Decision Alignment</div>
+              <div class="lp-desc" data-i18n="lead.s5.desc">Organized and led regular meetings; ensured technical and business stakeholders converged on decisions without ambiguity</div>
+            </div>
+          </div>
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">06</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s6.title">Documentation &amp; Workflow System</div>
+              <div class="lp-desc" data-i18n="lead.s6.desc">Built a structured Notion-based tracking system for project visibility — documentation, progress status, and decision log maintained throughout</div>
+            </div>
+          </div>
+          <div class="lp-step">
+            <div class="lp-left"><div class="lp-num">07</div><div class="lp-line"></div></div>
+            <div class="lp-content">
+              <div class="lp-title" data-i18n="lead.s7.title">End-to-End Technical Execution</div>
+              <div class="lp-desc" data-i18n="lead.s7.desc">Personally executed across data cleaning, modeling, and front-end deployment — maintaining strategic ownership while contributing at every technical layer</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: highlights + core message -->
+      <div>
+        <div class="lp-highlights">
+          <div class="lp-highlight">
+            <div class="lp-highlight-bar"></div>
+            <div class="lp-highlight-body">
+              <div class="lp-highlight-label" data-i18n="lead.h1.label">Coordination</div>
+              <div class="lp-highlight-text" data-i18n="lead.h1.text">Acted as <strong>primary project coordinator</strong> in an industry collaboration — the central link between research team and external stakeholders throughout the engagement</div>
+            </div>
+          </div>
+          <div class="lp-highlight">
+            <div class="lp-highlight-bar"></div>
+            <div class="lp-highlight-body">
+              <div class="lp-highlight-label" data-i18n="lead.h2.label">Requirement Translation</div>
+              <div class="lp-highlight-text" data-i18n="lead.h2.text">Translated <strong>ambiguous business requirements</strong> into structured and executable technical goals — removing uncertainty before execution</div>
+            </div>
+          </div>
+          <div class="lp-highlight">
+            <div class="lp-highlight-bar"></div>
+            <div class="lp-highlight-body">
+              <div class="lp-highlight-label" data-i18n="lead.h3.label">Timeline Ownership</div>
+              <div class="lp-highlight-text" data-i18n="lead.h3.text">Designed and maintained the <strong>project workflow and milestone timeline</strong> across all phases — from data acquisition through deployment</div>
+            </div>
+          </div>
+          <div class="lp-highlight">
+            <div class="lp-highlight-bar"></div>
+            <div class="lp-highlight-body">
+              <div class="lp-highlight-label" data-i18n="lead.h4.label">Notion System</div>
+              <div class="lp-highlight-text" data-i18n="lead.h4.text">Built a <strong>structured documentation and tracking system in Notion</strong> — maintaining full project visibility and institutional memory across the team</div>
+            </div>
+          </div>
+          <div class="lp-highlight">
+            <div class="lp-highlight-bar"></div>
+            <div class="lp-highlight-body">
+              <div class="lp-highlight-label" data-i18n="lead.h5.label">Dual Role</div>
+              <div class="lp-highlight-text" data-i18n="lead.h5.text">Contributed <strong>hands-on to every technical component</strong> — data, modeling, deployment — while holding overall strategic project direction simultaneously</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lp-message">
+          <div class="lp-message-text" data-i18n="lead.message">I was not just executing tasks — I structured the project, aligned stakeholders, and drove execution from ambiguity to delivery.</div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Takeaway ── -->
+  <div class="takeaway">
+    <div class="takeaway-label" data-i18n="tw.label">Final Takeaway</div>
+    <p class="takeaway-text" data-i18n="tw.text">This project delivered an end-to-end data-driven system that transformed fragmented, multi-country real-world data into a reliable and scalable decision-support tool — enabling stable energy contract pricing, reducing financial risk, and making model outputs accessible to non-technical stakeholders across the full business workflow.</p>
+  </div>
+
+</div><!-- end page-shell -->
+
+<script>
+/* ── Pipeline step data ── */
+const pipeSteps = {
+  en: [
+    { label: 'Raw Data', details: [
+      { label: 'Sources', body: 'PDF & CSV exports from clients across Thailand, Philippines, Australia' },
+      { label: 'Formats', body: 'Inconsistent column names, mixed units, varying feature availability per building' },
+      { label: 'Volume', body: 'Multiple building types: schools, F&B, hotels — each with distinct consumption patterns' }
+    ]},
+    { label: 'Cleaning', details: [
+      { label: 'Standardization', body: 'Unified feature schema applied across all client datasets' },
+      { label: 'Missing Values', body: 'Gaps systematically identified; targeted data collection coordinated with clients; remaining NA encoded' },
+      { label: 'Deduplication', body: 'Inconsistent naming resolved; records aligned to shared schema' }
+    ]},
+    { label: 'Feature Engineering', details: [
+      { label: 'Selection', body: 'Feature importance analysis used to remove low-signal, redundant, and correlated variables' },
+      { label: 'Encoding', body: 'Building type encoded as categorical; missing features passed as NA' },
+      { label: 'Schema', body: 'Unified input format supports all building types with a single feature contract' }
+    ]},
+    { label: 'Modeling', details: [
+      { label: 'Algorithms', body: 'Random Forest · Gradient Boosted Trees — both robust to missing values and non-linearity' },
+      { label: 'Strategy', body: 'Single unified model trained across all clients and building types' },
+      { label: 'Tuning', body: 'Hyperparameter optimization: n_estimators, max_depth, learning_rate' }
+    ]},
+    { label: 'Validation', details: [
+      { label: 'Protocol', body: 'Held-out client data used for cross-building-type evaluation' },
+      { label: 'Metric', body: 'Prediction accuracy improved from ~70% to ~93%' },
+      { label: 'Stability', body: 'Consistent performance across heterogeneous building portfolios' }
+    ]},
+    { label: 'Deployment', details: [
+      { label: 'Interface', body: 'Lightweight HTML/CSS web app — runs in any browser without dependencies' },
+      { label: 'Real-time', body: 'Parameter input → instant benchmark generation with visual output' },
+      { label: 'Users', body: 'Designed for non-technical client-facing stakeholders' }
+    ]}
+  ],
+  zh: [
+    { label: '原始数据', details: [
+      { label: '来源', body: '来自泰国、菲律宾、澳大利亚客户的 PDF 和 CSV 导出数据' },
+      { label: '格式', body: '列名不一致，单位混用，各建筑可用特征不同' },
+      { label: '类型', body: '多种建筑类型：学校、餐饮、酒店——各具不同的能耗模式' }
+    ]},
+    { label: '数据清洗', details: [
+      { label: '标准化', body: '统一特征模式，应用于所有客户数据集' },
+      { label: '缺失值', body: '系统识别缺口；协调客户补充数据；剩余缺失值编码为 NA' },
+      { label: '去重', body: '解决命名不一致问题，记录对齐至统一模式' }
+    ]},
+    { label: '特征工程', details: [
+      { label: '特征筛选', body: '通过特征重要性分析去除低信息量、冗余及相关特征' },
+      { label: '编码', body: '建筑类型作为分类特征；缺失特征直接传入为 NA' },
+      { label: '统一模式', body: '单一输入格式支持所有建筑类型' }
+    ]},
+    { label: '建模', details: [
+      { label: '算法', body: '随机森林 · 梯度提升树——均对缺失值和非线性关系具有鲁棒性' },
+      { label: '策略', body: '跨客户与建筑类型训练单一统一模型' },
+      { label: '调参', body: '超参数优化：n_estimators、max_depth、learning_rate' }
+    ]},
+    { label: '验证', details: [
+      { label: '验证方案', body: '使用留出客户数据进行跨建筑类型评估' },
+      { label: '指标', body: '预测准确率从约 70% 提升至约 93%' },
+      { label: '稳定性', body: '在异构建筑组合中表现一致' }
+    ]},
+    { label: '部署', details: [
+      { label: '界面', body: '轻量级 HTML/CSS 网页应用——无需依赖，任意浏览器可运行' },
+      { label: '实时', body: '参数输入 → 即时生成基准预测并可视化输出' },
+      { label: '用户', body: '面向非技术背景的客户端业务人员设计' }
+    ]}
+  ]
+};
+
+let currentStep = 0;
+let currentLang = localStorage.getItem('lang') || 'en';
+
+function showStep(idx) {
+  currentStep = idx;
+  document.querySelectorAll('.pipe-node').forEach((n, i) => {
+    n.classList.toggle('active', i === idx);
+  });
+  renderPipeDetails();
+}
+
+function renderPipeDetails() {
+  const step = pipeSteps[currentLang][currentStep];
+  const el = document.getElementById('pipeDetails');
+  el.className = 'pipe-details visible';
+  el.innerHTML = step.details.map(d =>
+    `<div class="pipe-detail-card"><div class="label">${d.label}</div><div class="body">${d.body}</div></div>`
+  ).join('');
+}
+
+/* ── i18n ── */
+const translations = {
+  en: {
+    'nav.back': '← Back to Projects',
+    'hero.label': 'Industry Collaboration · Data Science',
+    'hero.title': 'Energy Benchmark<br>Prediction System',
+    'hero.lead': 'Counterfactual baseline modeling for pricing and risk control in energy-saving contracts — improving prediction accuracy from ~70% to ~93% across heterogeneous building portfolios in Southeast Asia.',
+    'tag1': 'Feature Engineering',
+    'm1.label': 'Accuracy', 'm1.note': 'Up from ~70% baseline — enabling reliable pricing and contract negotiation',
+    'm2.label': 'Regions', 'm2.note': 'Thailand · Philippines · Australia — multi-format, multi-language data',
+    'm3.label': 'Building Types', 'm3.note': 'Schools · F&B · Hotels — single unified model across all types',
+    'm4.label': 'Role', 'm4.value': 'Lead', 'm4.note': 'End-to-end ownership: data cleaning → modeling → front-end system',
+    'prob.kicker': 'Problem Statement', 'prob.title': 'The Business Challenge',
+    'prob.copy': 'Energy-saving contracts (ESCs) require an accurate estimate of how much energy a building <em style="color:rgba(255,255,255,0.8)">would have consumed</em> without intervention — the counterfactual baseline. This number directly determines contract pricing and risk allocation. Without a reliable model, both sides are exposed to financial loss.',
+    'prob.l1': 'Buildings are highly heterogeneous — schools, restaurants, hotels each have fundamentally different consumption patterns',
+    'prob.l2': 'Initial predictions hovered around 70%, making stable pricing structurally impossible',
+    'prob.l3': 'Clients span multiple countries with inconsistent data formats and feature definitions',
+    'prob.l4': 'Goal: build a scalable counterfactual energy model that generalizes across diverse building types and data sources',
+    'data.kicker': 'Data Challenges', 'data.challenge': 'Raw Data Problems', 'data.solution': 'How It Was Resolved',
+    'data.c1': 'PDF and CSV formats mixed across clients',
+    'data.c2': 'Inconsistent feature naming — same variable called differently per client',
+    'data.c3': 'Missing and incomplete records throughout',
+    'data.c4': 'Different feature sets available per building',
+    'data.c5': 'No unified schema — each dataset effectively its own island',
+    'data.s1': 'Standardized all inputs into a unified feature schema',
+    'data.s2': 'Built a structured relational database across clients',
+    'data.s3': 'Systematically identified missing fields and coordinated targeted data collection with clients',
+    'data.s4': 'Remaining unavoidable gaps encoded as NA — handled natively by tree models',
+    'data.s5': 'Feature importance analysis used to remove redundant and correlated variables',
+    'pipe.kicker': 'System Pipeline',
+    'pipe.s0.num': '01', 'pipe.s0.name': 'Raw Data',
+    'pipe.s1.num': '02', 'pipe.s1.name': 'Cleaning',
+    'pipe.s2.num': '03', 'pipe.s2.name': 'Feature Eng.',
+    'pipe.s3.num': '04', 'pipe.s3.name': 'Modeling',
+    'pipe.s4.num': '05', 'pipe.s4.name': 'Validation',
+    'pipe.s5.num': '06', 'pipe.s5.name': 'Deployment',
+    'model.kicker': 'Modeling Approach',
+    'model.k1': 'Algorithm', 'model.t1': 'Tree-Based Ensemble', 'model.c1': 'Random Forest and Gradient Boosted Trees — both natively handle missing values, non-linear feature interactions, and mixed-type inputs without requiring complete feature sets per sample.',
+    'model.k2': 'Heterogeneity', 'model.t2': 'One Model, All Buildings', 'model.c2': 'Building type encoded as a categorical feature. Missing columns passed as NA — the model learns to route predictions appropriately. A single unified model replaces the need for per-client custom models.',
+    'model.k3': 'Tuning', 'model.t3': 'Feature Selection & Tuning', 'model.c3': 'Feature importance analysis removed redundant and correlated variables. Hyperparameter tuning (tree depth, number of estimators, learning rate) optimized for cross-client generalization.',
+    'res.kicker': 'Results',
+    'res.acc.title': 'Prediction Accuracy', 'res.acc.sub': 'Measured against held-out client data across building types',
+    'res.before': 'Before', 'res.after': 'After',
+    'res.l1': 'More stable predictions across diverse building types',
+    'res.l2': 'Reduced variance — consistent performance without per-client retraining',
+    'res.l3': 'Model outputs directly integrated into pricing workflow',
+    'res.vid.title': 'System Demo', 'res.vid.sub': 'Web-based interface — real-time benchmark generation for non-technical stakeholders',
+    'res.vid.cta': 'Watch on YouTube',
+    'impact.t1': 'Pricing Reliability', 'impact.d1': 'Contract prices grounded in statistically defensible baseline estimates — reducing negotiation friction and dispute risk',
+    'impact.t2': 'Financial Risk Reduction', 'impact.d2': 'Higher accuracy translates directly to lower margin-of-error in energy savings claims — protecting both parties from contract underperformance',
+    'impact.t3': 'Stakeholder Transparency', 'impact.d3': 'Web interface makes model outputs accessible to non-technical decision-makers — building trust in the prediction process',
+    'deploy.kicker': 'System Deployment', 'deploy.title': 'Web-Based Interface',
+    'deploy.copy': 'The prediction system was packaged into a lightweight web application — no technical background required to operate. Stakeholders input building parameters and receive benchmark estimates with supporting visualizations in real time.',
+    'deploy.l1': 'Built in HTML/CSS — zero-dependency, runs in any browser',
+    'deploy.l2': 'Real-time benchmark generation on parameter input',
+    'deploy.l3': 'Prediction outputs visualized for clarity in contract discussions',
+    'deploy.l4': 'Designed for use by non-technical client-facing teams',
+    'lead.kicker': 'Leadership & Project Ownership',
+    'lead.s1.title': 'Business Requirement Understanding', 'lead.s1.desc': 'Engaged directly with industry partner to surface ambiguous requirements and translate them into scoped, actionable objectives',
+    'lead.s2.title': 'Technical Objective Mapping', 'lead.s2.desc': 'Decomposed business goals into concrete modeling tasks, data requirements, and measurable success criteria',
+    'lead.s3.title': 'Project Structuring & Work Breakdown', 'lead.s3.desc': 'Designed the full project structure — phases, milestones, dependencies, and task ownership — before any execution began',
+    'lead.s4.title': 'Cross-Team Coordination', 'lead.s4.desc': 'Managed ongoing alignment between the research team and industry partner across data handoffs, feedback cycles, and scope changes',
+    'lead.s5.title': 'Meeting Facilitation & Decision Alignment', 'lead.s5.desc': 'Organized and led regular meetings; ensured technical and business stakeholders converged on decisions without ambiguity',
+    'lead.s6.title': 'Documentation & Workflow System', 'lead.s6.desc': 'Built a structured Notion-based tracking system for project visibility — documentation, progress status, and decision log maintained throughout',
+    'lead.s7.title': 'End-to-End Technical Execution', 'lead.s7.desc': 'Personally executed across data cleaning, modeling, and front-end deployment — maintaining strategic ownership while contributing at every technical layer',
+    'lead.h1.label': 'Coordination', 'lead.h1.text': 'Acted as <strong>primary project coordinator</strong> in an industry collaboration — the central link between research team and external stakeholders throughout the engagement',
+    'lead.h2.label': 'Requirement Translation', 'lead.h2.text': 'Translated <strong>ambiguous business requirements</strong> into structured and executable technical goals — removing uncertainty before execution',
+    'lead.h3.label': 'Timeline Ownership', 'lead.h3.text': 'Designed and maintained the <strong>project workflow and milestone timeline</strong> across all phases — from data acquisition through deployment',
+    'lead.h4.label': 'Notion System', 'lead.h4.text': 'Built a <strong>structured documentation and tracking system in Notion</strong> — maintaining full project visibility and institutional memory across the team',
+    'lead.h5.label': 'Dual Role', 'lead.h5.text': 'Contributed <strong>hands-on to every technical component</strong> — data, modeling, deployment — while holding overall strategic project direction simultaneously',
+    'lead.message': 'I was not just executing tasks — I structured the project, aligned stakeholders, and drove execution from ambiguity to delivery.',
+    'tw.label': 'Final Takeaway',
+    'tw.text': 'This project delivered an end-to-end data-driven system that transformed fragmented, multi-country real-world data into a reliable and scalable decision-support tool — enabling stable energy contract pricing, reducing financial risk, and making model outputs accessible to non-technical stakeholders across the full business workflow.'
+  },
+  zh: {
+    'nav.back': '← 返回项目页',
+    'hero.label': '产学合作 · 数据科学',
+    'hero.title': '能源基准预测系统',
+    'hero.lead': '面向节能合同定价与风险控制的反事实基准建模——在东南亚异构建筑组合中，预测准确率从约 70% 提升至约 93%。',
+    'tag1': '特征工程',
+    'm1.label': '准确率', 'm1.note': '从约 70% 基线提升——实现可靠定价与合同谈判',
+    'm2.label': '覆盖地区', 'm2.note': '泰国 · 菲律宾 · 澳大利亚——多格式、多语言数据',
+    'm3.label': '建筑类型', 'm3.note': '学校 · 餐饮 · 酒店——单一统一模型覆盖所有类型',
+    'm4.label': '项目职责', 'm4.value': '负责人', 'm4.note': '全流程主导：数据清洗 → 建模 → 前端系统集成',
+    'prob.kicker': '问题陈述', 'prob.title': '业务挑战',
+    'prob.copy': '节能合同（ESC）需要准确估计建筑<em style="color:rgba(255,255,255,0.8)">在未干预情况下</em>的能耗基准——即反事实基准值。这一数字直接决定合同定价与风险分配。若模型不可靠，合同双方均面临财务损失风险。',
+    'prob.l1': '建筑高度异构——学校、餐饮、酒店各自具有本质不同的能耗特征',
+    'prob.l2': '初始预测准确率仅约 70%，导致稳定定价在结构上无从实现',
+    'prob.l3': '客户分布多个国家，数据格式与特征定义不一致',
+    'prob.l4': '目标：构建可扩展的反事实能耗模型，覆盖多样化建筑类型与数据来源',
+    'data.kicker': '数据挑战', 'data.challenge': '原始数据问题', 'data.solution': '解决方案',
+    'data.c1': '客户数据混合使用 PDF 与 CSV 格式',
+    'data.c2': '特征命名不一致——同一变量在不同客户处叫法各异',
+    'data.c3': '记录普遍存在缺失与不完整问题',
+    'data.c4': '不同建筑可用特征集各不相同',
+    'data.c5': '缺乏统一模式——每个数据集各自为孤岛',
+    'data.s1': '将所有输入标准化为统一特征模式',
+    'data.s2': '跨客户构建结构化关系数据库',
+    'data.s3': '系统识别缺失字段，协调客户进行针对性数据补充',
+    'data.s4': '剩余不可避免的缺失值编码为 NA，由树模型原生处理',
+    'data.s5': '通过特征重要性分析去除冗余及相关特征',
+    'pipe.kicker': '系统流程',
+    'pipe.s0.num': '01', 'pipe.s0.name': '原始数据',
+    'pipe.s1.num': '02', 'pipe.s1.name': '数据清洗',
+    'pipe.s2.num': '03', 'pipe.s2.name': '特征工程',
+    'pipe.s3.num': '04', 'pipe.s3.name': '建模',
+    'pipe.s4.num': '05', 'pipe.s4.name': '验证',
+    'pipe.s5.num': '06', 'pipe.s5.name': '部署',
+    'model.kicker': '建模方案',
+    'model.k1': '算法', 'model.t1': '树集成模型', 'model.c1': '随机森林与梯度提升树——均原生支持缺失值、非线性特征交互与混合类型输入，无需每个样本具备完整特征集。',
+    'model.k2': '异构性', 'model.t2': '一个模型，覆盖所有建筑', 'model.c2': '建筑类型编码为分类特征；缺失列直接传入为 NA——模型自主学习适配路径。单一统一模型取代了针对每个客户分别定制模型的需求。',
+    'model.k3': '调优', 'model.t3': '特征筛选与参数调优', 'model.c3': '特征重要性分析去除冗余与相关变量。超参数调优（树深度、估计器数量、学习率）针对跨客户泛化能力进行优化。',
+    'res.kicker': '结果',
+    'res.acc.title': '预测准确率', 'res.acc.sub': '在各类型建筑的留出客户数据上评估',
+    'res.before': '优化前', 'res.after': '优化后',
+    'res.l1': '在不同建筑类型上预测更加稳定',
+    'res.l2': '方差降低——无需针对每个客户重新训练即可保持一致性能',
+    'res.l3': '模型输出直接集成至定价工作流',
+    'res.vid.title': '系统演示', 'res.vid.sub': '网页端界面——面向非技术业务人员的实时基准生成',
+    'res.vid.cta': '前往 YouTube 观看',
+    'impact.t1': '定价可靠性', 'impact.d1': '合同定价以统计上可辩护的基准估计为依据——降低谈判摩擦与争议风险',
+    'impact.t2': '财务风险降低', 'impact.d2': '准确率提升直接降低节能量声明的误差幅度——保护双方免受合同履约不足的损失',
+    'impact.t3': '利益相关方透明度', 'impact.d3': '网页界面使非技术决策者能够直接获取模型输出——增强对预测过程的信任',
+    'deploy.kicker': '系统部署', 'deploy.title': '网页端界面',
+    'deploy.copy': '预测系统被封装为轻量级网页应用——无需技术背景即可操作。业务人员输入建筑参数，即可实时获得带有可视化图表的基准预测结果。',
+    'deploy.l1': '基于 HTML/CSS 构建——零依赖，任意浏览器可运行',
+    'deploy.l2': '参数输入后即时生成基准预测',
+    'deploy.l3': '预测输出可视化，便于合同谈判中清晰呈现',
+    'deploy.l4': '专为非技术背景的客户端业务团队设计',
+    'lead.kicker': '领导力与项目主导',
+    'lead.s1.title': '业务需求理解', 'lead.s1.desc': '与行业合作伙伴直接沟通，挖掘模糊需求并将其转化为明确、可执行的目标',
+    'lead.s2.title': '技术目标拆解', 'lead.s2.desc': '将业务目标分解为具体的建模任务、数据需求与可量化的成功标准',
+    'lead.s3.title': '项目结构设计与工作分解', 'lead.s3.desc': '在执行启动前完成完整项目结构设计——阶段划分、里程碑、依赖关系与任务归属',
+    'lead.s4.title': '跨团队协调', 'lead.s4.desc': '持续管理研究团队与行业合作伙伴之间的协同——涵盖数据交接、反馈闭环与范围变更',
+    'lead.s5.title': '会议主持与决策对齐', 'lead.s5.desc': '组织并主持定期会议，确保技术与业务相关方就关键决策达成明确共识',
+    'lead.s6.title': '文档与工作流管理', 'lead.s6.desc': '构建基于 Notion 的结构化跟踪系统——全程维护项目可见度、进度状态与决策记录',
+    'lead.s7.title': '全链路技术执行', 'lead.s7.desc': '亲自执行数据清洗、建模与前端部署全流程，同时保持对整体项目方向的战略性把控',
+    'lead.h1.label': '协调能力', 'lead.h1.text': '担任<strong>首要项目协调人</strong>，是研究团队与外部利益相关方之间的核心纽带',
+    'lead.h2.label': '需求转化', 'lead.h2.text': '将<strong>模糊的业务需求</strong>转化为结构化、可执行的技术目标，在执行前消除不确定性',
+    'lead.h3.label': '时间线管理', 'lead.h3.text': '设计并维护<strong>项目工作流与里程碑时间线</strong>，覆盖从数据采集到部署的全部阶段',
+    'lead.h4.label': 'Notion 系统', 'lead.h4.text': '构建<strong>基于 Notion 的结构化文档与追踪系统</strong>，维护完整的项目可见度与团队知识积累',
+    'lead.h5.label': '双重角色', 'lead.h5.text': '在<strong>亲自参与每个技术环节</strong>——数据、建模、部署——的同时，全程掌握整体战略方向',
+    'lead.message': '我不仅仅是在执行任务——我构建了项目结构，对齐了各方利益相关者，并将模糊的问题驱动为完整的交付成果。',
+    'tw.label': '项目总结',
+    'tw.text': '本项目交付了一套端到端的数据驱动系统，将来自多个国家的碎片化真实数据转化为可靠、可扩展的决策支持工具——实现节能合同定价的稳定化，降低财务风险，并让非技术背景的业务人员能够在整个业务流程中直接使用模型输出。'
+  }
+};
+
+function applyLang(lang) {
+  const t = translations[lang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  document.getElementById('langToggle').textContent = lang === 'en' ? '中文' : 'English';
+  document.documentElement.lang = lang === 'en' ? 'en' : 'zh';
+  renderPipeDetails();
+}
+
+document.getElementById('langToggle').addEventListener('click', () => {
+  currentLang = currentLang === 'en' ? 'zh' : 'en';
+  localStorage.setItem('lang', currentLang);
+  applyLang(currentLang);
+});
+
+/* ── Animate bars on scroll ── */
+let barsAnimated = false;
+function animateBars() {
+  if (barsAnimated) return;
+  const el = document.getElementById('barBefore');
+  if (!el) return;
+  const rect = el.closest('.panel').getBoundingClientRect();
+  if (rect.top < window.innerHeight * 0.9) {
+    document.getElementById('barBefore').style.width = '70%';
+    document.getElementById('barAfter').style.width = '93%';
+    barsAnimated = true;
+  }
+}
+window.addEventListener('scroll', animateBars, { passive: true });
+
+/* ── Init ── */
+applyLang(currentLang);
+renderPipeDetails();
+setTimeout(animateBars, 300);
+</script>
+</body>
+</html>

@@ -103,7 +103,7 @@ body {
 }
 .metrics {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 16px;
   margin: 28px 0;
 }
@@ -171,6 +171,7 @@ body {
 }
 @media (max-width: 900px) {
   .metrics { grid-template-columns: 1fr 1fr; }
+  .metrics .metric:last-child { grid-column: span 2; }
   .grid { grid-template-columns: 1fr; }
   .page-shell { width: min(1120px, calc(100% - 28px)); }
   .wf-fork { flex-direction: column; align-items: center; }
@@ -337,6 +338,137 @@ body {
   border-right: 5px solid transparent;
   border-top: 7px solid rgba(0,245,196,0.45);
 }
+/* ── Workflow extras ── */
+.wf-node.accent-amber { border-color: rgba(255,180,0,0.22); box-shadow: 0 0 24px rgba(255,180,0,0.07), 0 8px 28px rgba(2,4,12,0.3); }
+.accent-amber .wf-stage { color: rgba(255,180,0,0.7); }
+.wf-node.accent-rose  { border-color: rgba(255,80,120,0.22); box-shadow: 0 0 24px rgba(255,80,120,0.07), 0 8px 28px rgba(2,4,12,0.3); }
+.accent-rose .wf-stage { color: rgba(255,100,140,0.7); }
+.wf-node-planned {
+  border-color: rgba(255,255,255,0.08) !important;
+  opacity: 0.52;
+}
+.wf-status-done   { color: rgba(0,245,196,0.9); }
+.wf-status-planned { color: rgba(255,180,0,0.85); }
+.wf-tool-planned  { border-style: dashed !important; }
+/* Loop */
+.wf-loop-wrap {
+  width: min(480px, 100%);
+  border: 1px dashed rgba(255,180,0,0.22);
+  border-radius: 18px;
+  padding: 16px;
+  position: relative;
+  background: rgba(255,180,0,0.02);
+}
+.wf-loop-label {
+  position: absolute;
+  top: -10px; left: 18px;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(255,180,0,0.7);
+  background: #090910;
+  padding: 0 8px;
+}
+.wf-loop-back {
+  margin-top: 10px;
+  font-size: 11px;
+  color: rgba(255,180,0,0.52);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  text-align: center;
+}
+/* Trio */
+.wf-trio-wrap {
+  display: flex; flex-direction: column; align-items: center; width: 100%;
+}
+.wf-trio-top {
+  width: min(760px, 100%); height: 36px; position: relative;
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.wf-trio-top::before {
+  content: ''; position: absolute; top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 1px; height: 18px;
+  background: rgba(55,138,221,0.3);
+}
+.wf-trio-top::after {
+  content: ''; position: absolute; top: 18px; left: calc(50% - 178px);
+  width: 356px; height: 1px;
+  background: rgba(55,138,221,0.2);
+}
+.wf-trio-dot {
+  position: absolute; top: 17px; left: calc(50% - 179px);
+  width: 3px; height: 3px; border-radius: 50%;
+  background: rgba(55,138,221,0.5);
+  box-shadow: 356px 0 0 0 rgba(55,138,221,0.5);
+}
+.wf-trio-row {
+  display: flex; gap: 16px; width: min(760px, 100%);
+}
+.wf-trio-node { flex: 1; }
+@media (max-width: 900px) {
+  .wf-trio-row { flex-direction: column; align-items: center; }
+  .wf-trio-node { width: 100%; max-width: 340px; }
+  .wf-trio-top::after, .wf-trio-dot { display: none; }
+}
+/* ── Output Gallery ── */
+.output-section { margin-top: 28px; }
+.output-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 16px;
+}
+.output-card {
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  background: rgba(7,10,18,0.72);
+  box-shadow: 0 14px 34px rgba(2,4,12,0.28);
+  display: flex;
+  flex-direction: column;
+}
+.output-img-wrap {
+  background: #f7f7f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.output-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+.output-meta {
+  padding: 16px 20px 18px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.output-label {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  color: rgba(0,245,196,0.65);
+  margin-bottom: 6px;
+}
+.output-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.88);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+.output-desc {
+  font-size: 11.5px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+@media (max-width: 900px) {
+  .output-grid { grid-template-columns: 1fr; }
+}
 /* ── Journal Table ── */
 .journal-section { margin-top: 28px; }
 .journal-table-wrap {
@@ -433,6 +565,11 @@ body {
         <div class="metric-value">20 Yrs</div>
         <p class="metric-note" data-i18n="m4.note">Longitudinal records enabling analysis of how collaboration patterns evolved over time</p>
       </div>
+      <div class="metric">
+        <div class="metric-label" data-i18n="m5.label">References</div>
+        <div class="metric-value">~550K</div>
+        <p class="metric-note" data-i18n="m5.note">Reference records scraped from 12 journals · reserved for future large-scale modeling</p>
+      </div>
     </section>
 
     <section class="grid">
@@ -446,25 +583,33 @@ body {
       </div>
     </section>
 
+    <section style="margin-top: 18px;">
+      <div class="panel">
+        <div class="kicker" data-i18n="ref.kicker">Reference Corpus</div>
+        <p class="copy" data-i18n="ref.copy">Beyond article metadata and authorship, the scraper also captured the full reference list of each paper. This yields a secondary corpus of ~550K reference records across 12 journals — not yet part of the current outputs, but preserved as a foundation for future large-scale modeling: cross-journal co-citation analysis, topic classification, and citation-based community detection. With each paper citing ~30–50 sources, the reference graph is substantially larger than the co-authorship network alone.</p>
+      </div>
+    </section>
+
     <section class="workflow-section">
       <div class="kicker" data-i18n="wf.kicker">Workflow</div>
       <div class="wf-flow">
 
-        <!-- Stage 1: Raw Data -->
+        <!-- Stage 1: Data Collection -->
         <div class="wf-node accent-teal">
           <div class="wf-stage" data-i18n="wf.s1.stage">Stage 1 · Input</div>
-          <div class="wf-title" data-i18n="wf.s1.title">Raw Data Sources</div>
-          <div class="wf-detail" data-i18n="wf.s1.detail">17 optimization journals · 20-year publication span · fragmented, unstructured records</div>
+          <div class="wf-title" data-i18n="wf.s1.title">Data Collection</div>
+          <div class="wf-detail" data-i18n="wf.s1.detail">Web scraping across 17 optimization journals, 20-year span · extracted papers, authors, references (~550K records), keywords</div>
+          <div class="wf-tools"><span class="wf-tool">Python</span><span class="wf-tool">Requests</span><span class="wf-tool">BeautifulSoup</span><span class="wf-tool">Selenium</span></div>
         </div>
 
         <div class="wf-arrow"></div>
 
-        <!-- Stage 2: Scraping -->
+        <!-- Stage 2: Data Structuring -->
         <div class="wf-node accent-teal">
-          <div class="wf-stage" data-i18n="wf.s2.stage">Stage 2 · Collection</div>
-          <div class="wf-title" data-i18n="wf.s2.title">Web Scraping</div>
-          <div class="wf-detail" data-i18n="wf.s2.detail">Scraped article metadata and reference lists from journal publishers</div>
-          <div class="wf-tools"><span class="wf-tool">Python</span></div>
+          <div class="wf-stage" data-i18n="wf.s2.stage">Stage 2 · Structuring</div>
+          <div class="wf-title" data-i18n="wf.s2.title">Data Structuring</div>
+          <div class="wf-detail" data-i18n="wf.s2.detail">Unified schemas: Papers · Authors · Citations · Keywords · heterogeneous sources harmonized into relational tables</div>
+          <div class="wf-tools"><span class="wf-tool">Python</span><span class="wf-tool">SQL</span><span class="wf-tool">pandas</span></div>
         </div>
 
         <div class="wf-arrow"></div>
@@ -473,18 +618,41 @@ body {
         <div class="wf-node accent-purple">
           <div class="wf-stage" data-i18n="wf.s3.stage">Stage 3 · Cleaning</div>
           <div class="wf-title" data-i18n="wf.s3.title">Data Cleaning &amp; Entity Resolution</div>
-          <div class="wf-detail" data-i18n="wf.s3.detail">Author disambiguation · deduplication · standardising noisy name variants across journals</div>
+          <div class="wf-detail" data-i18n="wf.s3.detail">Author name disambiguation across ~39K unique identities · deduplication · metadata normalization · missing value handling</div>
           <div class="wf-tools"><span class="wf-tool">Python</span></div>
         </div>
 
         <div class="wf-arrow"></div>
 
-        <!-- Stage 4: SQL Schema -->
+        <!-- Stage 4: Clustering / Representation -->
         <div class="wf-node accent-purple">
-          <div class="wf-stage" data-i18n="wf.s4.stage">Stage 4 · Storage</div>
-          <div class="wf-title" data-i18n="wf.s4.title">Relational Schema</div>
-          <div class="wf-detail" data-i18n="wf.s4.detail">Structured relational tables: Authors · Papers · Co-authorship edges · Citation edges</div>
-          <div class="wf-tools"><span class="wf-tool">SQL</span><span class="wf-tool">Python</span></div>
+          <div class="wf-stage" data-i18n="wf.s4.stage">Stage 4 · Representation</div>
+          <div class="wf-title" data-i18n="wf.s4.title">Clustering &amp; Representation Learning</div>
+          <div class="wf-detail" data-i18n="wf.s4.detail">Spectral clustering (self-explored) · supervisor-provided algorithm implemented in MATLAB → .mat files</div>
+          <div class="wf-tools"><span class="wf-tool">Python</span><span class="wf-tool">MATLAB</span></div>
+        </div>
+
+        <div class="wf-arrow"></div>
+
+        <!-- Stage 5: Validation Loop -->
+        <div class="wf-loop-wrap">
+          <div class="wf-loop-label" data-i18n="wf.loop.label">Iterative Validation Loop</div>
+          <div class="wf-node accent-amber" style="width:100%">
+            <div class="wf-stage" data-i18n="wf.s5.stage">Stage 5 · Validation</div>
+            <div class="wf-title" data-i18n="wf.s5.title">Single-Journal Validation</div>
+            <div class="wf-detail" data-i18n="wf.s5.detail">Construct graph from one journal · compare with known academic structure · evaluate clustering quality · identify data quality issues</div>
+          </div>
+          <div class="wf-loop-back" data-i18n="wf.loop.back">◂ Refine clustering params &amp; preprocessing → loop back to Stage 3–4</div>
+        </div>
+
+        <div class="wf-arrow"></div>
+
+        <!-- Stage 6: Multi-Journal Scaling -->
+        <div class="wf-node accent-amber">
+          <div class="wf-stage" data-i18n="wf.s6.stage">Stage 6 · Scaling</div>
+          <div class="wf-title" data-i18n="wf.s6.title">Multi-Journal Scaling</div>
+          <div class="wf-detail" data-i18n="wf.s6.detail">Extend validated pipeline to all 17 journals · integrate heterogeneous graph structures into a unified corpus</div>
+          <div class="wf-tools"><span class="wf-tool">Python</span><span class="wf-tool">SQL</span></div>
         </div>
 
         <!-- Fork: two networks -->
@@ -495,18 +663,18 @@ body {
           <div class="wf-fork">
             <div class="wf-fork-node">
               <div class="wf-node accent-teal" style="width:100%">
-                <div class="wf-stage" data-i18n="wf.s5a.stage">Network A</div>
-                <div class="wf-title" data-i18n="wf.s5a.title">Co-authorship Network</div>
-                <div class="wf-detail" data-i18n="wf.s5a.detail">Nodes = authors · Edges = co-authored papers</div>
+                <div class="wf-stage">Graph A · <span class="wf-status-done" data-i18n="wf.done">Completed</span></div>
+                <div class="wf-title" data-i18n="wf.s7a.title">Co-authorship Network</div>
+                <div class="wf-detail" data-i18n="wf.s7a.detail">Nodes = authors · Edges = co-authored papers · community detection &amp; centrality metrics applied</div>
                 <div class="wf-tools"><span class="wf-tool">Python</span></div>
               </div>
             </div>
             <div class="wf-fork-node">
-              <div class="wf-node accent-teal" style="width:100%">
-                <div class="wf-stage" data-i18n="wf.s5b.stage">Network B</div>
-                <div class="wf-title" data-i18n="wf.s5b.title">Citation Network</div>
-                <div class="wf-detail" data-i18n="wf.s5b.detail">Nodes = papers · Edges = citation links</div>
-                <div class="wf-tools"><span class="wf-tool">Python</span></div>
+              <div class="wf-node wf-node-planned" style="width:100%">
+                <div class="wf-stage">Graph B · <span class="wf-status-planned" data-i18n="wf.planned">Planned</span></div>
+                <div class="wf-title" data-i18n="wf.s7b.title">Citation Network</div>
+                <div class="wf-detail" data-i18n="wf.s7b.detail">Nodes = papers · Edges = citation links (~550K) · reference corpus collected · analysis pending</div>
+                <div class="wf-tools"><span class="wf-tool wf-tool-planned">Python</span></div>
               </div>
             </div>
           </div>
@@ -515,23 +683,64 @@ body {
           </div>
         </div>
 
-        <!-- Stage 5: Analysis -->
-        <div class="wf-node accent-blue">
-          <div class="wf-stage" data-i18n="wf.s6.stage">Stage 5 · Analysis</div>
-          <div class="wf-title" data-i18n="wf.s6.title">Clustering &amp; Network Analysis</div>
-          <div class="wf-detail" data-i18n="wf.s6.detail">Community detection · centrality metrics · validated against real-world collaboration structures</div>
-          <div class="wf-tools"><span class="wf-tool">Python</span><span class="wf-tool">MATLAB</span></div>
+        <!-- Trio: Analysis + Output -->
+        <div class="wf-trio-wrap">
+          <div class="wf-trio-top">
+            <div class="wf-trio-dot"></div>
+          </div>
+          <div class="wf-trio-row">
+            <div class="wf-trio-node">
+              <div class="wf-node accent-blue" style="width:100%">
+                <div class="wf-stage">Analysis A · <span class="wf-status-done" data-i18n="wf.done">Completed</span></div>
+                <div class="wf-title" data-i18n="wf.s8a.title">Co-authorship Analysis</div>
+                <div class="wf-detail" data-i18n="wf.s8a.detail">Community detection · centrality metrics · collaboration structure mapping</div>
+                <div class="wf-tools"><span class="wf-tool">Python</span><span class="wf-tool">MATLAB</span></div>
+              </div>
+            </div>
+            <div class="wf-trio-node">
+              <div class="wf-node wf-node-planned" style="width:100%">
+                <div class="wf-stage">Analysis B · <span class="wf-status-planned" data-i18n="wf.planned">Planned</span></div>
+                <div class="wf-title" data-i18n="wf.s8b.title">Citation &amp; Topic Analysis</div>
+                <div class="wf-detail" data-i18n="wf.s8b.detail">Co-citation modeling · keyword-based topic classification · cross-journal semantic clustering</div>
+                <div class="wf-tools"><span class="wf-tool wf-tool-planned">Python</span></div>
+              </div>
+            </div>
+            <div class="wf-trio-node">
+              <div class="wf-node accent-rose" style="width:100%">
+                <div class="wf-stage" data-i18n="wf.s9.stage">Output</div>
+                <div class="wf-title" data-i18n="wf.s9.title">Insights &amp; Manuscript</div>
+                <div class="wf-detail" data-i18n="wf.s9.detail">Interpretable collaboration maps · research landscape visualization · contributing to a manuscript on large-scale academic network modeling</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="wf-arrow"></div>
+      </div>
+    </section>
 
-        <!-- Stage 6: Output -->
-        <div class="wf-node accent-blue">
-          <div class="wf-stage" data-i18n="wf.s7.stage">Stage 6 · Output</div>
-          <div class="wf-title" data-i18n="wf.s7.title">Insights &amp; Visualization</div>
-          <div class="wf-detail" data-i18n="wf.s7.detail">Interpretable collaboration patterns · research community structure · visual outputs</div>
+    <section class="output-section">
+      <div class="kicker" data-i18n="out.kicker">Sample Results</div>
+      <div class="output-grid">
+        <div class="output-card">
+          <div class="output-img-wrap" style="height:340px;">
+            <img src="community_backbone.png" alt="Community backbone of Mathematical Programming journal (k=6)">
+          </div>
+          <div class="output-meta">
+            <div class="output-label" data-i18n="out.fig1.label">Mathematical Programming · k = 6</div>
+            <div class="output-title" data-i18n="out.fig1.title">Co-authorship Community Backbone</div>
+            <p class="output-desc" data-i18n="out.fig1.desc">The journal partitioned into six communities. Each circle groups authors who collaborate densely within the cluster; inter-community edges represent cross-group ties. Node size reflects degree centrality.</p>
+          </div>
         </div>
-
+        <div class="output-card">
+          <div class="output-img-wrap" style="height:340px;">
+            <img src="community_backbone_c0.png" alt="Community 0 zoomed in">
+          </div>
+          <div class="output-meta">
+            <div class="output-label" data-i18n="out.fig2.label">Community 0 · Zoomed View</div>
+            <div class="output-title" data-i18n="out.fig2.title">Sub-community Internal Structure</div>
+            <p class="output-desc" data-i18n="out.fig2.desc">A single community from the partition above, expanded to show individual author nodes and the full collaboration topology within the cluster — revealing core contributors and peripheral members.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -673,19 +882,35 @@ const translations = {
     'm3.note': 'Articles scraped and structured from 17 optimization journals',
     'm4.label': 'Time Span',
     'm4.note': 'Longitudinal records enabling analysis of how collaboration patterns evolved over time',
+    'm5.label': 'References',
+    'm5.note': 'Reference records scraped from 12 journals · reserved for future large-scale modeling',
+    'ref.kicker': 'Reference Corpus',
+    'ref.copy': 'Beyond article metadata and authorship, the scraper also captured the full reference list of each paper. This yields a secondary corpus of ~550K reference records across 12 journals — not yet part of the current outputs, but preserved as a foundation for future large-scale modeling: cross-journal co-citation analysis, topic classification, and citation-based community detection. With each paper citing ~30–50 sources, the reference graph is substantially larger than the co-authorship network alone.',
     k3: 'Why It Matters',
     copy2: 'Publications are not isolated events — they form networks. Reframing the data this way makes it possible to study how research communities form, how collaboration evolves, and which structural patterns persist across journals and decades.',
     k4: 'Outcome',
     copy3: 'A reusable, structured network dataset with a reproducible pipeline — ready for downstream clustering, community detection, and longitudinal modeling of academic collaboration.',
     'wf.kicker': 'Workflow',
-    'wf.s1.stage': 'Stage 1 · Input', 'wf.s1.title': 'Raw Data Sources', 'wf.s1.detail': '17 optimization journals · 20-year publication span · fragmented, unstructured records',
-    'wf.s2.stage': 'Stage 2 · Collection', 'wf.s2.title': 'Web Scraping', 'wf.s2.detail': 'Scraped article metadata and reference lists from journal publishers',
-    'wf.s3.stage': 'Stage 3 · Cleaning', 'wf.s3.title': 'Data Cleaning & Entity Resolution', 'wf.s3.detail': 'Author disambiguation · deduplication · standardising noisy name variants across journals',
-    'wf.s4.stage': 'Stage 4 · Storage', 'wf.s4.title': 'Relational Schema', 'wf.s4.detail': 'Structured relational tables: Authors · Papers · Co-authorship edges · Citation edges',
-    'wf.s5a.stage': 'Network A', 'wf.s5a.title': 'Co-authorship Network', 'wf.s5a.detail': 'Nodes = authors · Edges = co-authored papers',
-    'wf.s5b.stage': 'Network B', 'wf.s5b.title': 'Citation Network', 'wf.s5b.detail': 'Nodes = papers · Edges = citation links',
-    'wf.s6.stage': 'Stage 5 · Analysis', 'wf.s6.title': 'Clustering & Network Analysis', 'wf.s6.detail': 'Community detection · centrality metrics · validated against real-world collaboration structures',
-    'wf.s7.stage': 'Stage 6 · Output', 'wf.s7.title': 'Insights & Visualization', 'wf.s7.detail': 'Interpretable collaboration patterns · research community structure · visual outputs',
+    'wf.s1.stage': 'Stage 1 · Input', 'wf.s1.title': 'Data Collection', 'wf.s1.detail': 'Web scraping across 17 optimization journals, 20-year span · extracted papers, authors, references (~550K records), keywords',
+    'wf.s2.stage': 'Stage 2 · Structuring', 'wf.s2.title': 'Data Structuring', 'wf.s2.detail': 'Unified schemas: Papers · Authors · Citations · Keywords · heterogeneous sources harmonized into relational tables',
+    'wf.s3.stage': 'Stage 3 · Cleaning', 'wf.s3.title': 'Data Cleaning & Entity Resolution', 'wf.s3.detail': 'Author name disambiguation across ~39K unique identities · deduplication · metadata normalization · missing value handling',
+    'wf.s4.stage': 'Stage 4 · Representation', 'wf.s4.title': 'Clustering & Representation Learning', 'wf.s4.detail': 'Spectral clustering (self-explored) · supervisor-provided algorithm implemented in MATLAB → .mat files',
+    'wf.loop.label': 'Iterative Validation Loop', 'wf.loop.back': '◂ Refine clustering params & preprocessing → loop back to Stage 3–4',
+    'wf.s5.stage': 'Stage 5 · Validation', 'wf.s5.title': 'Single-Journal Validation', 'wf.s5.detail': 'Construct graph from one journal · compare with known academic structure · evaluate clustering quality · identify data quality issues',
+    'wf.s6.stage': 'Stage 6 · Scaling', 'wf.s6.title': 'Multi-Journal Scaling', 'wf.s6.detail': 'Extend validated pipeline to all 17 journals · integrate heterogeneous graph structures into a unified corpus',
+    'wf.done': 'Completed', 'wf.planned': 'Planned',
+    'wf.s7a.title': 'Co-authorship Network', 'wf.s7a.detail': 'Nodes = authors · Edges = co-authored papers · community detection & centrality metrics applied',
+    'wf.s7b.title': 'Citation Network', 'wf.s7b.detail': 'Nodes = papers · Edges = citation links (~550K) · reference corpus collected · analysis pending',
+    'wf.s8a.title': 'Co-authorship Analysis', 'wf.s8a.detail': 'Community detection · centrality metrics · collaboration structure mapping',
+    'wf.s8b.title': 'Citation & Topic Analysis', 'wf.s8b.detail': 'Co-citation modeling · keyword-based topic classification · cross-journal semantic clustering',
+    'wf.s9.stage': 'Output', 'wf.s9.title': 'Insights & Manuscript', 'wf.s9.detail': 'Interpretable collaboration maps · research landscape visualization · contributing to a manuscript on large-scale academic network modeling',
+    'out.kicker': 'Sample Results',
+    'out.fig1.label': 'Mathematical Programming · k = 6',
+    'out.fig1.title': 'Co-authorship Community Backbone',
+    'out.fig1.desc': 'The journal partitioned into six communities. Each circle groups authors who collaborate densely within the cluster; inter-community edges represent cross-group ties. Node size reflects degree centrality.',
+    'out.fig2.label': 'Community 0 · Zoomed View',
+    'out.fig2.title': 'Sub-community Internal Structure',
+    'out.fig2.desc': 'A single community from the partition above, expanded to show individual author nodes and the full collaboration topology within the cluster — revealing core contributors and peripheral members.',
     'jt.kicker': 'Journal Coverage',
     'jt.col1': 'Journal', 'jt.col2': 'Status', 'jt.col3': 'Articles', 'jt.col4': 'Authors', 'jt.col5': 'Note',
     'jt.done': 'Complete', 'jt.partial': 'Partial', 'jt.pending': 'Pending',
@@ -706,19 +931,35 @@ const translations = {
     'm3.note': '从 17 本期刊爬取并结构化的文章总量',
     'm4.label': '时间跨度',
     'm4.note': '长期发表记录，支持对合作模式随时间演化的纵向分析',
+    'm5.label': '参考文献',
+    'm5.note': '从 12 本期刊爬取的引用记录 · 保留用于未来大规模建模',
+    'ref.kicker': '参考文献语料库',
+    'ref.copy': '除文章元数据与作者信息外，爬虫还抓取了每篇论文的完整参考文献列表。这形成了一个约 55 万条记录的辅助语料库，覆盖 12 本期刊——目前尚未纳入现有产出，但已作为未来大规模建模的基础数据保留：包括跨期刊共引分析、主题分类与基于引文的社区发现。由于每篇论文平均引用 30–50 篇文献，引文图谱的规模远超合著网络本身。',
     k3: '项目价值',
     copy2: '论文并非孤立事件，而是构成网络。将数据重新框架为连接系统后，就能系统研究研究社群如何形成、合作关系如何演化，以及哪些结构模式跨期刊、跨年代持续存在。',
     k4: '最终产出',
     copy3: '一套可复用的结构化网络数据集与可复现的分析流程——可直接用于下游聚类、社区发现与学术合作纵向建模。',
     'wf.kicker': '工作流程',
-    'wf.s1.stage': '阶段 1 · 输入', 'wf.s1.title': '原始数据来源', 'wf.s1.detail': '17 本优化方向期刊 · 20 年发表记录 · 分散、非结构化的原始数据',
-    'wf.s2.stage': '阶段 2 · 采集', 'wf.s2.title': '网络爬取', 'wf.s2.detail': '从各期刊出版商爬取文章元数据与参考文献列表',
-    'wf.s3.stage': '阶段 3 · 清洗', 'wf.s3.title': '数据清洗与实体解析', 'wf.s3.detail': '作者身份消歧 · 去重 · 跨期刊噪声名称变体标准化',
-    'wf.s4.stage': '阶段 4 · 存储', 'wf.s4.title': '关系型数据库建模', 'wf.s4.detail': '结构化关系表：作者 · 论文 · 合著边 · 引文边',
-    'wf.s5a.stage': '网络 A', 'wf.s5a.title': '合著网络', 'wf.s5a.detail': '节点 = 作者 · 边 = 合著论文',
-    'wf.s5b.stage': '网络 B', 'wf.s5b.title': '引文网络', 'wf.s5b.detail': '节点 = 论文 · 边 = 引文关系',
-    'wf.s6.stage': '阶段 5 · 分析', 'wf.s6.title': '聚类与网络分析', 'wf.s6.detail': '社区发现 · 中心性指标 · 与真实合作结构验证对比',
-    'wf.s7.stage': '阶段 6 · 输出', 'wf.s7.title': '洞察与可视化', 'wf.s7.detail': '可解释的合作模式 · 研究社群结构 · 可视化输出',
+    'wf.s1.stage': '阶段 1 · 输入', 'wf.s1.title': '数据采集', 'wf.s1.detail': '网络爬取覆盖 17 本优化领域期刊，时间跨度 20 年 · 提取论文、作者、参考文献（约 55 万条）与关键词',
+    'wf.s2.stage': '阶段 2 · 结构化', 'wf.s2.title': '数据结构化', 'wf.s2.detail': '统一模式：论文 · 作者 · 引文 · 关键词 · 将异构来源整合为关系型表格',
+    'wf.s3.stage': '阶段 3 · 清洗', 'wf.s3.title': '数据清洗与实体解析', 'wf.s3.detail': '约 3.9 万个唯一作者身份的姓名消歧 · 去重 · 元数据规范化 · 缺失值处理',
+    'wf.s4.stage': '阶段 4 · 表示学习', 'wf.s4.title': '聚类与表示学习', 'wf.s4.detail': '谱聚类（自主探索）· 导师提供的算法在 MATLAB 中实现 → 生成 .mat 中间表示',
+    'wf.loop.label': '迭代验证循环', 'wf.loop.back': '◂ 调整聚类参数与预处理 → 返回阶段 3–4',
+    'wf.s5.stage': '阶段 5 · 验证', 'wf.s5.title': '单期刊验证', 'wf.s5.detail': '以单本期刊构建图 · 与已知学术结构对比 · 评估聚类质量 · 识别数据质量问题',
+    'wf.s6.stage': '阶段 6 · 扩展', 'wf.s6.title': '多期刊规模扩展', 'wf.s6.detail': '将验证后的流程扩展至全部 17 本期刊 · 将异构图结构整合为统一语料库',
+    'wf.done': '已完成', 'wf.planned': '规划中',
+    'wf.s7a.title': '合著网络', 'wf.s7a.detail': '节点 = 作者 · 边 = 合著论文 · 已完成社区发现与中心性分析',
+    'wf.s7b.title': '引文网络', 'wf.s7b.detail': '节点 = 论文 · 边 = 引文关系（约 55 万条）· 语料已采集 · 分析待完成',
+    'wf.s8a.title': '合著关系分析', 'wf.s8a.detail': '社区发现 · 中心性指标 · 合作结构映射',
+    'wf.s8b.title': '引文与主题分析', 'wf.s8b.detail': '共引建模 · 基于关键词的主题分类 · 跨期刊语义聚类',
+    'wf.s9.stage': '输出', 'wf.s9.title': '洞察与论文', 'wf.s9.detail': '可解释的合作关系图谱 · 研究领域结构可视化 · 为大规模学术网络建模论文提供支撑',
+    'out.kicker': '结果示例',
+    'out.fig1.label': 'Mathematical Programming · k = 6',
+    'out.fig1.title': '合著社区骨干图',
+    'out.fig1.desc': '期刊被划分为六个社区，每个圆圈聚合了内部合作紧密的作者群体；社区间的连边代表跨群体合作关系。节点大小反映度中心性。',
+    'out.fig2.label': '社区 0 · 放大视图',
+    'out.fig2.title': '子社区内部结构',
+    'out.fig2.desc': '从上图中取出一个社区并放大，展示该簇内各作者节点及完整的合作拓扑结构，清晰呈现核心贡献者与边缘成员的分布。',
     'jt.kicker': '期刊覆盖情况',
     'jt.col1': '期刊', 'jt.col2': '状态', 'jt.col3': '文章数', 'jt.col4': '作者数', 'jt.col5': '备注',
     'jt.done': '已完成', 'jt.partial': '部分完成', 'jt.pending': '待处理',
