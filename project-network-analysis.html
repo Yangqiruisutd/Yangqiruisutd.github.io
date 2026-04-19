@@ -103,7 +103,7 @@ body {
 }
 .metrics {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin: 28px 0;
 }
@@ -170,7 +170,8 @@ body {
   color: rgba(0,245,196,0.82);
 }
 @media (max-width: 900px) {
-  .metrics, .grid { grid-template-columns: 1fr; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .grid { grid-template-columns: 1fr; }
   .page-shell { width: min(1120px, calc(100% - 28px)); }
   .wf-fork { flex-direction: column; align-items: center; }
   .wf-fork-line { display: none; }
@@ -418,14 +419,19 @@ body {
         <p class="metric-note" data-i18n="m1.note">16 complete · 1 in progress · all top optimization venues</p>
       </div>
       <div class="metric">
-        <div class="metric-label" data-i18n="m2.label">Corpus Size</div>
-        <div class="metric-value">~39K / 24K</div>
-        <p class="metric-note" data-i18n="m2.note">Authors and papers across the full combined dataset</p>
+        <div class="metric-label" data-i18n="m2.label">Authors</div>
+        <div class="metric-value">~39K</div>
+        <p class="metric-note" data-i18n="m2.note">Unique authors identified across the full combined corpus</p>
       </div>
       <div class="metric">
-        <div class="metric-label" data-i18n="m3.label">Time Span</div>
+        <div class="metric-label" data-i18n="m3.label">Papers</div>
+        <div class="metric-value">~24K</div>
+        <p class="metric-note" data-i18n="m3.note">Articles scraped and structured from 17 optimization journals</p>
+      </div>
+      <div class="metric">
+        <div class="metric-label" data-i18n="m4.label">Time Span</div>
         <div class="metric-value">20 Yrs</div>
-        <p class="metric-note" data-i18n="m3.note">Longitudinal records enabling analysis of how collaboration patterns evolved over time</p>
+        <p class="metric-note" data-i18n="m4.note">Longitudinal records enabling analysis of how collaboration patterns evolved over time</p>
       </div>
     </section>
 
@@ -660,10 +666,12 @@ const translations = {
     tag1: 'Network Analysis',
     'm1.label': 'Journals',
     'm1.note': '16 complete · 1 in progress · all top optimization venues',
-    'm2.label': 'Corpus Size',
-    'm2.note': 'Authors and papers across the full combined dataset',
-    'm3.label': 'Time Span',
-    'm3.note': 'Longitudinal records enabling analysis of how collaboration patterns evolved over time',
+    'm2.label': 'Authors',
+    'm2.note': 'Unique authors identified across the full combined corpus',
+    'm3.label': 'Papers',
+    'm3.note': 'Articles scraped and structured from 17 optimization journals',
+    'm4.label': 'Time Span',
+    'm4.note': 'Longitudinal records enabling analysis of how collaboration patterns evolved over time',
     k3: 'Why It Matters',
     copy2: 'Publications are not isolated events — they form networks. Reframing the data this way makes it possible to study how research communities form, how collaboration evolves, and which structural patterns persist across journals and decades.',
     k4: 'Outcome',
@@ -691,10 +699,12 @@ const translations = {
     tag1: '网络分析',
     'm1.label': '期刊数',
     'm1.note': '16 本已完成 · 1 本进行中 · 均为优化领域顶级期刊',
-    'm2.label': '数据规模',
-    'm2.note': '合并语料中覆盖的作者数与论文数',
-    'm3.label': '时间跨度',
-    'm3.note': '长期发表记录，支持对合作模式随时间演化的纵向分析',
+    'm2.label': '作者数',
+    'm2.note': '合并语料中识别的唯一作者总量',
+    'm3.label': '论文数',
+    'm3.note': '从 17 本期刊爬取并结构化的文章总量',
+    'm4.label': '时间跨度',
+    'm4.note': '长期发表记录，支持对合作模式随时间演化的纵向分析',
     k3: '项目价值',
     copy2: '论文并非孤立事件，而是构成网络。将数据重新框架为连接系统后，就能系统研究研究社群如何形成、合作关系如何演化，以及哪些结构模式跨期刊、跨年代持续存在。',
     k4: '最终产出',
