@@ -164,6 +164,21 @@ body {
           drop-shadow(0 0 42px rgba(0,245,196,0.2))
           drop-shadow(0 0 122px rgba(180,100,255,0.2));
 }
+#cat-5 {
+  width: min(44vw, 660px);
+  max-height: 68vh;
+  left: 26%;
+  top: 62%;
+  --tx: -50%;
+  --ty: -50%;
+  --idle-scale: 0.91;
+  --active-scale: 1.06;
+  --active-opacity: 0.33;
+  filter: brightness(1.08) contrast(1.14) saturate(1.2)
+          blur(0.08px)
+          drop-shadow(0 0 42px rgba(0,245,196,0.2))
+          drop-shadow(0 0 122px rgba(180,100,255,0.2));
+}
 #hero .section-inner {
   transform: translateY(96px);
 }
@@ -889,6 +904,11 @@ footer { position: relative; z-index: 3; padding: 22px 48px; border-top: 0.5px s
     left: 78%;
     top: 74%;
   }
+  #cat-5 {
+    width: min(54vw, 440px);
+    left: 26%;
+    top: 66%;
+  }
   .contact-shell, .form-row, .project-metrics, .project-detail-grid { grid-template-columns: 1fr; }
   .section-inner { max-width: none; }
   #about .section-inner { justify-content: center; }
@@ -936,6 +956,11 @@ footer { position: relative; z-index: 3; padding: 22px 48px; border-top: 0.5px s
     left: 76%;
     top: 78%;
   }
+  #cat-5 {
+    width: 62vw;
+    left: 24%;
+    top: 68%;
+  }
   .avatar {
     width: calc(var(--hero-orb-size) * 0.86);
     height: calc(var(--hero-orb-size) * 0.86);
@@ -963,6 +988,7 @@ footer { position: relative; z-index: 3; padding: 22px 48px; border-top: 0.5px s
   <img class="cat-img" id="cat-2" src="images/3.png" alt="">
   <img class="cat-img" id="cat-3" src="images/4.png" alt="">
   <img class="cat-img" id="cat-4" src="images/5.png" alt="">
+  <img class="cat-img" id="cat-5" src="images/1.png" alt="">
 </div>
 
 <nav>
@@ -1514,7 +1540,7 @@ footer { position: relative; z-index: 3; padding: 22px 48px; border-top: 0.5px s
 
   /* ── Direction-aware cat pose switcher ── */
   const sections =['hero','about','experience','skills','portfolio','contact'];
-  const sectionCats = ['cat-0','cat-1','cat-2','cat-3','cat-4','cat-4'];
+  const sectionCats = ['cat-0','cat-1','cat-2','cat-3','cat-4','cat-5'];
   const catImgs  = sectionCats.map(id => document.getElementById(id));
   const dots     =document.querySelectorAll('.dot');
   const hero     =document.getElementById('hero');
