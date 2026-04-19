@@ -2003,7 +2003,7 @@ footer { position: relative; z-index: 3; padding: 22px 48px; border-top: 0.5px s
     entries.forEach(e=>{
       if(e.isIntersecting){const idx=sections.indexOf(e.target.id);if(idx!==-1)switchCat(idx);}
     });
-  },{threshold:0.45});
+  },{threshold:0, rootMargin:'-40% 0px -40% 0px'});
   sections.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
 
   dots.forEach(d=>{
