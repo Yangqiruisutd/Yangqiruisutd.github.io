@@ -863,10 +863,9 @@ const translations = {
   function onKey(e) {
     const k = e.key;
     const isScrollKey = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(k);
-    const isCanvasFocused = document.activeElement === canvas;
 
-    // Once the player has focused the canvas, keep arrow keys and space from scrolling the page.
-    if (isCanvasFocused && isScrollKey) e.preventDefault();
+    // While the game is actively running, reserve scroll keys for gameplay.
+    if (gameState === 'playing' && isScrollKey) e.preventDefault();
 
     const now = performance.now();
     if (lastKeyTime[k] && now - lastKeyTime[k] < KEY_THROTTLE) return;
