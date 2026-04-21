@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tongue Tied · Mini-game</title>
+<link rel="icon" type="image/svg+xml" href="/logo.svg">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --teal: #00f5c4; --purple: #b464ff; --blue: #378add; --amber: #ffb400; --rose: #ff6b8a; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(180,100,255,0.09), transparent 28%),
+    radial-gradient(circle at 85% 12%, rgba(0,245,196,0.08), transparent 26%),
+    radial-gradient(circle at 55% 80%, rgba(55,138,221,0.07), transparent 30%),
+    linear-gradient(180deg, #080a12, #090910 45%, #05070d);
+  color: #fff;
+  font-family: 'Inter', 'Helvetica Neue', -apple-system, sans-serif;
+}
+
+/* ── Nav ── */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 0 48px; height: 64px;
+  border-bottom: 0.5px solid rgba(255,255,255,0.07);
+  background: rgba(9,9,16,0.88); backdrop-filter: blur(14px);
+}
+.back-link {
+  height: 34px; padding: 0 14px; border-radius: 999px;
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  transition: color .2s, border-color .2s, background .2s;
+}
+.back-link:hover { color: var(--teal); border-color: rgba(0,245,196,0.3); background: rgba(0,245,196,0.06); }
+.lang-toggle {
+  height: 34px; padding: 0 14px; border-radius: 999px;
+  display: inline-flex; align-items: center;
+  border: 1px solid rgba(0,245,196,0.24);
+  background: rgba(0,245,196,0.06);
+  color: rgba(0,245,196,0.82);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 12px; cursor: pointer;
+  transition: color .2s;
+}
+.lang-toggle:hover { color: #fff; }
+
+/* ── Shell ── */
+.page-shell {
+  width: min(1080px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 96px 0 80px;
+}
+
+/* ── Typography ── */
+.eyebrow {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(180,100,255,0.8);
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+}
+.section-label {
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  font-family: 'Rajdhani', ui-monospace, sans-serif;
+  margin-bottom: 20px;
+}
+.lead {
+  max-width: 780px; color: rgba(255,255,255,0.68); line-height: 1.8;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+}
+
+/* ── Hero ── */
+.hero { padding: 40px 0 60px; border-bottom: 0.5px solid rgba(255,255,255,0.07); margin-bottom: 64px; }
+.hero-tag {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 5px 12px; border-radius: 999px;
+  border: 1px solid rgba(180,100,255,0.3);
+  background: rgba(180,100,255,0.07);
+  font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: rgba(180,100,255,0.85);
+  font-family: 'Rajdhani', sans-serif;
+  margin-bottom: 20px;
+}
+.hero-tag-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--purple); }
+.hero-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(38px, 6vw, 72px);
+  font-weight: 800; letter-spacing: -0.03em; text-transform: uppercase;
+  line-height: 1;
+  background: linear-gradient(135deg, #fff 40%, rgba(180,100,255,0.8));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px;
+}
+.hero-sub {
+  font-size: 16px; color: rgba(255,255,255,0.5);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  margin-bottom: 28px;
+}
+.hero-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+.chip {
+  padding: 4px 12px; border-radius: 999px;
+  font-size: 11px; letter-spacing: 0.06em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.55);
+}
+.chip.purple { border-color: rgba(180,100,255,0.3); color: rgba(180,100,255,0.85); background: rgba(180,100,255,0.06); }
+.chip.teal   { border-color: rgba(0,245,196,0.3);   color: rgba(0,245,196,0.85);   background: rgba(0,245,196,0.06); }
+.hero-meta { display: flex; gap: 32px; }
+.hero-stat { display: flex; flex-direction: column; gap: 4px; }
+.hero-stat-val {
+  font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 700;
+  color: var(--purple);
+}
+.hero-stat-key { font-size: 11px; color: rgba(255,255,255,0.38); letter-spacing: 0.08em; font-family: 'Rajdhani', sans-serif; text-transform: uppercase; }
+
+/* ── Video strip ── */
+.video-strip {
+  margin-bottom: 72px;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(180,100,255,0.18);
+  background: rgba(180,100,255,0.04);
+}
+.video-strip-inner {
+  display: flex; align-items: center; justify-content: center;
+  padding: 40px 32px; gap: 40px;
+}
+.game-sprites { display: flex; gap: 24px; align-items: center; }
+.sprite-frame {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.sprite-img {
+  width: 64px; height: 64px; object-fit: contain;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 10px rgba(180,100,255,0.5));
+}
+.sprite-label { font-size: 10px; color: rgba(255,255,255,0.35); font-family: ui-monospace, sans-serif; text-transform: uppercase; letter-spacing: 0.08em; }
+.video-divider { width: 1px; height: 80px; background: rgba(255,255,255,0.08); }
+.video-link-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.video-thumb-link {
+  display: block; position: relative; border-radius: 8px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: border-color .2s;
+  width: 240px;
+}
+.video-thumb-link:hover { border-color: rgba(180,100,255,0.4); }
+.video-thumb-link img { width: 100%; height: auto; display: block; opacity: 0.85; }
+.video-play-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.35);
+}
+.play-btn {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: rgba(180,100,255,0.85);
+  display: flex; align-items: center; justify-content: center;
+}
+.video-caption { font-size: 11px; color: rgba(255,255,255,0.35); font-family: ui-monospace, sans-serif; }
+
+/* ── Section ── */
+.section { margin-bottom: 64px; }
+.section-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 28px;
+}
+.section-line { flex: 1; height: 0.5px; background: rgba(255,255,255,0.07); }
+.section-num {
+  font-family: 'Orbitron', sans-serif; font-size: 11px;
+  color: rgba(180,100,255,0.5); letter-spacing: 0.1em;
+}
+
+/* ── Overview 2-col ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+.info-card {
+  padding: 24px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.info-card-label { font-size: 11px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Rajdhani', sans-serif; margin-bottom: 10px; }
+.info-card-val { font-size: 15px; color: rgba(255,255,255,0.82); line-height: 1.6; font-family: ui-monospace, sans-serif; }
+.info-card-val.purple { color: rgba(180,100,255,0.9); font-family: 'Orbitron', sans-serif; font-size: 13px; }
+
+/* ── Design goal highlight ── */
+.goal-box {
+  padding: 32px 36px; border-radius: 12px;
+  border: 1px solid rgba(0,245,196,0.15);
+  background: rgba(0,245,196,0.04);
+  margin-bottom: 28px;
+}
+.goal-box-q {
+  font-size: clamp(18px, 2.5vw, 24px); line-height: 1.5; font-weight: 500;
+  color: rgba(255,255,255,0.88);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  border-left: 3px solid var(--teal); padding-left: 20px;
+}
+.goal-box-q em { color: var(--teal); font-style: normal; }
+
+/* ── Mechanic highlight ── */
+.mechanic-wrap { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; margin-top: 28px; }
+.mechanic-card {
+  padding: 20px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.mechanic-icon { font-size: 22px; margin-bottom: 10px; }
+.mechanic-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 6px; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+.mechanic-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.6; font-family: ui-monospace, sans-serif; }
+
+/* ── Controls diagram ── */
+.controls-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 28px; }
+.control-block { display: flex; flex-direction: column; gap: 12px; }
+.control-player {
+  font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em;
+  font-family: 'Rajdhani', sans-serif; margin-bottom: 4px;
+}
+.control-player.p1 { color: rgba(0,245,196,0.8); }
+.control-player.p2 { color: rgba(180,100,255,0.8); }
+.key-grid { display: flex; flex-direction: column; gap: 4px; align-items: center; width: fit-content; }
+.key-row { display: flex; gap: 4px; }
+.key {
+  width: 36px; height: 36px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; font-family: ui-monospace, sans-serif;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  color: rgba(255,255,255,0.7);
+}
+.key.teal { border-color: rgba(0,245,196,0.3); background: rgba(0,245,196,0.06); color: var(--teal); }
+.key.purple { border-color: rgba(180,100,255,0.3); background: rgba(180,100,255,0.06); color: var(--purple); }
+.key.wide { width: 80px; }
+.control-note { font-size: 12px; color: rgba(255,255,255,0.4); font-family: ui-monospace, sans-serif; line-height: 1.6; margin-top: 8px; }
+
+/* ── Levels ── */
+.levels-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+.level-card {
+  flex: 1; min-width: 160px; padding: 16px 20px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+}
+.level-num { font-family: 'Orbitron', sans-serif; font-size: 11px; color: rgba(255,255,255,0.3); margin-bottom: 6px; }
+.level-desc { font-size: 13px; color: rgba(255,255,255,0.7); font-family: ui-monospace, sans-serif; line-height: 1.5; }
+
+/* ── Interesting ── */
+.insight-list { display: flex; flex-direction: column; gap: 16px; margin-top: 4px; }
+.insight-item { display: flex; gap: 16px; align-items: flex-start; }
+.insight-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: var(--purple);
+  flex-shrink: 0; margin-top: 5px;
+}
+.insight-text { font-size: 14px; color: rgba(255,255,255,0.65); line-height: 1.7; font-family: ui-monospace, sans-serif; }
+.insight-text strong { color: rgba(255,255,255,0.88); font-weight: 600; }
+
+/* ── Contribution ── */
+.contrib-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 8px; }
+.contrib-item {
+  padding: 18px 20px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.contrib-bar { width: 3px; border-radius: 2px; background: var(--purple); flex-shrink: 0; min-height: 40px; }
+.contrib-title { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85); margin-bottom: 4px; font-family: 'Rajdhani', sans-serif; letter-spacing: 0.06em; text-transform: uppercase; }
+.contrib-desc { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.6; font-family: ui-monospace, sans-serif; }
+
+/* ── Tech notes ── */
+.tech-row { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+.tech-item { display: flex; gap: 16px; padding: 16px 20px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); background: rgba(255,255,255,0.02); }
+.tech-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(0,245,196,0.7); font-family: 'Rajdhani', sans-serif; width: 140px; flex-shrink: 0; padding-top: 1px; }
+.tech-val { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; font-family: ui-monospace, sans-serif; }
+
+/* ── Game placeholder ── */
+.game-placeholder {
+  border: 1px dashed rgba(180,100,255,0.25);
+  border-radius: 12px;
+  padding: 48px;
+  text-align: center;
+  background: rgba(180,100,255,0.03);
+  margin-top: 8px;
+}
+.game-placeholder-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: rgba(180,100,255,0.7); margin-bottom: 10px; }
+.game-placeholder-sub { font-size: 13px; color: rgba(255,255,255,0.35); font-family: ui-monospace, sans-serif; line-height: 1.6; }
+
+/* ── Footer ── */
+.page-footer {
+  margin-top: 80px; padding-top: 32px;
+  border-top: 0.5px solid rgba(255,255,255,0.07);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.footer-back { color: rgba(255,255,255,0.35); font-size: 12px; font-family: ui-monospace, sans-serif; text-decoration: none; transition: color .2s; }
+.footer-back:hover { color: var(--purple); }
+.footer-note { font-size: 11px; color: rgba(255,255,255,0.2); font-family: 'Rajdhani', sans-serif; letter-spacing: 0.08em; }
+
+@media (max-width: 768px) {
+  .nav { padding: 0 20px; }
+  .page-shell { width: calc(100% - 40px); }
+  .two-col, .controls-wrap, .contrib-wrap, .mechanic-wrap { grid-template-columns: 1fr; }
+  .video-strip-inner { flex-direction: column; }
+  .hero-meta { flex-wrap: wrap; gap: 20px; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="back-link" href="index.html">← Back</a>
+  <button class="lang-toggle" id="langToggle" type="button">中文</button>
+</nav>
+
+<div class="page-shell">
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <div class="hero-tag"><span class="hero-tag-dot"></span><span data-i18n="tt.eyebrow">Mini-game · Interactive Game Project</span></div>
+    <h1 class="hero-title" data-i18n="tt.title">Tongue Tied</h1>
+    <p class="hero-sub" data-i18n="tt.sub">A cooperative Python mini-game about teamwork and communication</p>
+    <div class="hero-chips">
+      <span class="chip purple">Python</span>
+      <span class="chip purple">Turtle Graphics</span>
+      <span class="chip teal">OOP</span>
+      <span class="chip teal">Game Design</span>
+      <span class="chip">SUTD · 2022</span>
+      <span class="chip">Team of 6</span>
+    </div>
+    <div class="hero-meta">
+      <div class="hero-stat">
+        <span class="hero-stat-val">2</span>
+        <span class="hero-stat-key" data-i18n="tt.meta.players">Players</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">4</span>
+        <span class="hero-stat-key" data-i18n="tt.meta.levels">Levels</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">3</span>
+        <span class="hero-stat-key" data-i18n="tt.meta.lives">Shared Lives</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-val">60px</span>
+        <span class="hero-stat-key" data-i18n="tt.meta.dist">Max Separation</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Visual strip: sprites + video link ── -->
+  <div class="video-strip">
+    <div class="video-strip-inner">
+      <div class="game-sprites">
+        <div class="sprite-frame">
+          <img class="sprite-img" src="https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/player1.gif" alt="Player 1">
+          <span class="sprite-label" data-i18n="tt.sprite.p1">Player 1 · Arrows</span>
+        </div>
+        <div class="sprite-frame">
+          <img class="sprite-img" src="https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/player2.gif" alt="Player 2">
+          <span class="sprite-label" data-i18n="tt.sprite.p2">Player 2 · WASD</span>
+        </div>
+        <div class="sprite-frame">
+          <img class="sprite-img" src="https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/lilypad.gif" alt="Goal">
+          <span class="sprite-label" data-i18n="tt.sprite.goal">Goal · Lilypad</span>
+        </div>
+        <div class="sprite-frame">
+          <img class="sprite-img" src="https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/log.gif" alt="Obstacle">
+          <span class="sprite-label" data-i18n="tt.sprite.log">Obstacle · Log</span>
+        </div>
+      </div>
+      <div class="video-divider"></div>
+      <div class="video-link-wrap">
+        <a class="video-thumb-link" href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" rel="noreferrer">
+          <img src="https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/watersprite_huge.gif" alt="Game background">
+          <div class="video-play-overlay">
+            <div class="play-btn">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="white"><path d="M4 2l10 6-10 6V2z"/></svg>
+            </div>
+          </div>
+        </a>
+        <span class="video-caption" data-i18n="tt.video.caption">View source & demo → GitHub</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 01 Overview ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s1.label">Overview</span>
+      <div class="section-line"></div>
+    </div>
+    <p class="lead" style="margin-bottom:28px" data-i18n="tt.s1.body">
+      Tongue Tied is a two-player cooperative mini-game built in Python for a SUTD class project (SC08, 2022). Two players share one keyboard, control two frogs, and must navigate a river together — all while staying physically close to each other on screen. The game was designed by a team of six students as an interactive exploration of communication and coordination.
+    </p>
+    <div class="two-col">
+      <div class="info-card">
+        <div class="info-card-label" data-i18n="tt.s1.context.label">Context</div>
+        <div class="info-card-val" data-i18n="tt.s1.context.val">SUTD SC08 class project, December 2022. Team of 6. Theme: use software to solve an interesting problem.</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label" data-i18n="tt.s1.tech.label">Tech Stack</div>
+        <div class="info-card-val" data-i18n="tt.s1.tech.val">Python · turtle graphics · OOP · AABB collision detection · game state machine</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 02 Design Goal ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s2.label">Design Goal</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="goal-box">
+      <p class="goal-box-q" data-i18n="tt.s2.quote">
+        How do you <em>force</em> two people to communicate — not through instructions, but through the rules of the game itself?
+      </p>
+    </div>
+    <p class="lead" data-i18n="tt.s2.body">
+      The core design question was social: many games are called "co-op" but can be played without saying a word. We wanted a mechanic where silence literally causes failure. The answer was a distance constraint — if the two frogs drift more than 60 pixels apart in either axis, movement is blocked. This makes communication the gameplay, not just a nice-to-have.
+    </p>
+  </div>
+
+  <!-- ── 03 Gameplay ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s3.label">Gameplay</span>
+      <div class="section-line"></div>
+    </div>
+    <p class="lead" style="margin-bottom:0" data-i18n="tt.s3.body">
+      Both players sit at the same keyboard. Player 1 uses arrow keys; Player 2 uses WASD. Both frogs must reach the lilypad together, avoid moving logs, and survive 4 levels with shared lives. Press K to start or restart, P to quit.
+    </p>
+
+    <div class="controls-wrap">
+      <div class="control-block">
+        <div class="control-player p1" data-i18n="tt.s3.p1">Player 1 · Arrow Keys</div>
+        <div class="key-grid">
+          <div class="key-row"><div class="key teal">↑</div></div>
+          <div class="key-row"><div class="key teal">←</div><div class="key teal">↓</div><div class="key teal">→</div></div>
+        </div>
+        <p class="control-note" data-i18n="tt.s3.p1.note">Movement is blocked if the separation from Player 2 exceeds 60px in either axis.</p>
+      </div>
+      <div class="control-block">
+        <div class="control-player p2" data-i18n="tt.s3.p2">Player 2 · WASD</div>
+        <div class="key-grid">
+          <div class="key-row"><div class="key purple">W</div></div>
+          <div class="key-row"><div class="key purple">A</div><div class="key purple">S</div><div class="key purple">D</div></div>
+        </div>
+        <p class="control-note" data-i18n="tt.s3.p2.note">Same constraint applies symmetrically — neither player can advance alone.</p>
+      </div>
+    </div>
+
+    <div class="levels-row">
+      <div class="level-card">
+        <div class="level-num" data-i18n="tt.s3.lv1.num">Level 1</div>
+        <div class="level-desc" data-i18n="tt.s3.lv1.desc">1 long log · slow speed. Learn the controls and the distance mechanic.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-num" data-i18n="tt.s3.lv2.num">Level 2</div>
+        <div class="level-desc" data-i18n="tt.s3.lv2.desc">+1 short log · slightly faster. Coordination becomes necessary.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-num" data-i18n="tt.s3.lv3.num">Level 3</div>
+        <div class="level-desc" data-i18n="tt.s3.lv3.desc">+2 obstacles · speed increases. Talking becomes urgent.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-num" data-i18n="tt.s3.lv4.num">Level 4</div>
+        <div class="level-desc" data-i18n="tt.s3.lv4.desc">+3 fast logs. Beat this and the couple lives happily ever after.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 04 What Makes It Interesting ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s4.label">What Makes It Interesting</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="insight-list">
+      <div class="insight-item">
+        <div class="insight-dot"></div>
+        <div class="insight-text" data-i18n="tt.s4.i1"><strong>The mechanic is the message.</strong> The 60px leash isn't just a technical rule — it encodes a social idea. You can't go faster than your partner, and your partner can't go faster than you. The rope forces empathy.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-dot"></div>
+        <div class="insight-text" data-i18n="tt.s4.i2"><strong>One keyboard, two players.</strong> Sharing input forces physical proximity, which changes the social dynamic of play. This is deliberate — the game is designed for pairs sitting together, not online.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-dot"></div>
+        <div class="insight-text" data-i18n="tt.s4.i3"><strong>Shared lives create shared stakes.</strong> Losing a life hurts both players equally. There's no pointing fingers — success and failure are genuinely collective.</div>
+      </div>
+      <div class="insight-item">
+        <div class="insight-dot"></div>
+        <div class="insight-text" data-i18n="tt.s4.i4"><strong>The name is the concept.</strong> "Tongue Tied" — two tongues, one knot. The frog theme is playful, but the name captures what the game is really about: what happens when two people have to untie themselves together.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 05 My Contribution ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s5.label">My Contribution</span>
+      <div class="section-line"></div>
+    </div>
+    <p class="lead" style="margin-bottom:24px" data-i18n="tt.s5.body">This was a 6-person team project. My contributions focused on game logic, player mechanics, and system integration.</p>
+    <div class="contrib-wrap">
+      <div class="contrib-item">
+        <div class="contrib-bar"></div>
+        <div>
+          <div class="contrib-title" data-i18n="tt.s5.c1.title">Player Movement Logic</div>
+          <div class="contrib-desc" data-i18n="tt.s5.c1.desc">Implemented the distance constraint system — the x/y separation checks that block movement when players drift too far apart.</div>
+        </div>
+      </div>
+      <div class="contrib-item">
+        <div class="contrib-bar"></div>
+        <div>
+          <div class="contrib-title" data-i18n="tt.s5.c2.title">Collision Detection</div>
+          <div class="contrib-desc" data-i18n="tt.s5.c2.desc">Adapted AABB (Axis Aligned Bounding Box) collision logic for detecting log hits and lilypad arrivals.</div>
+        </div>
+      </div>
+      <div class="contrib-item">
+        <div class="contrib-bar"></div>
+        <div>
+          <div class="contrib-title" data-i18n="tt.s5.c3.title">Game State Machine</div>
+          <div class="contrib-desc" data-i18n="tt.s5.c3.desc">Built the state loop — Start, Game, Dead, Win, Quit — and wired keyboard triggers to transitions.</div>
+        </div>
+      </div>
+      <div class="contrib-item">
+        <div class="contrib-bar"></div>
+        <div>
+          <div class="contrib-title" data-i18n="tt.s5.c4.title">Level Progression</div>
+          <div class="contrib-desc" data-i18n="tt.s5.c4.desc">Designed the level dictionary and obstacle speed-up system that scales difficulty across 4 levels.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 06 Technical Notes ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s6.label">Technical Notes</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="tech-row">
+      <div class="tech-item">
+        <div class="tech-label" data-i18n="tt.s6.t1.label">Architecture</div>
+        <div class="tech-val" data-i18n="tt.s6.t1.val">OOP class hierarchy: Sprite → Player / Car / Goal. Each entity manages its own state, rendering, and update logic. A shared pen turtle handles all canvas drawing.</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-label" data-i18n="tt.s6.t2.label">Collision</div>
+        <div class="tech-val" data-i18n="tt.s6.t2.val">AABB (Axis-Aligned Bounding Box) — checks whether the absolute difference between two objects' x and y coordinates falls within their combined half-widths and half-heights.</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-label" data-i18n="tt.s6.t3.label">Distance Constraint</div>
+        <div class="tech-val" data-i18n="tt.s6.t3.val">Each Player.up/down/left/right method calls far_apart_x() or far_apart_y() before moving, returning early if the signed separation exceeds ±60px. This asymmetric check means both players can lock each other.</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-label" data-i18n="tt.s6.t4.label">Game Loop</div>
+        <div class="tech-val" data-i18n="tt.s6.t4.val">Single while True loop with gamestate string ("Start" / "Game" / "Dead" / "Win" / "Quit"). wn.tracer(False) + wn.update() gives manual frame control for smooth rendering.</div>
+      </div>
+      <div class="tech-item">
+        <div class="tech-label" data-i18n="tt.s6.t5.label">Difficulty Scaling</div>
+        <div class="tech-val" data-i18n="tt.s6.t5.val">Each Car has a base dx and an accumulated speed float. On each level-up, speed_up() increments |speed| by 0.1, making logs progressively faster without changing the base movement delta.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Browser Game (placeholder) ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s7.label">Play In Browser</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="game-placeholder" id="game-placeholder">
+      <div class="game-placeholder-title" data-i18n="tt.s7.soon">Browser version coming soon</div>
+      <p class="game-placeholder-sub" data-i18n="tt.s7.sub">A lightweight HTML5 canvas version preserving the same core mechanic is in progress.<br>Source code available on <a href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" style="color:rgba(180,100,255,0.7)">GitHub</a>.</p>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <div class="page-footer">
+    <a class="footer-back" href="index.html" data-i18n="tt.footer.back">← Back to portfolio</a>
+    <span class="footer-note">SUTD · SC08 · 2022</span>
+  </div>
+
+</div>
+
+<script>
+const translations = {
+  en: {
+    'tt.eyebrow': 'Mini-game · Interactive Game Project',
+    'tt.title': 'Tongue Tied',
+    'tt.sub': 'A cooperative Python mini-game about teamwork and communication',
+    'tt.meta.players': 'Players', 'tt.meta.levels': 'Levels', 'tt.meta.lives': 'Shared Lives', 'tt.meta.dist': 'Max Separation',
+    'tt.sprite.p1': 'Player 1 · Arrows', 'tt.sprite.p2': 'Player 2 · WASD', 'tt.sprite.goal': 'Goal · Lilypad', 'tt.sprite.log': 'Obstacle · Log',
+    'tt.video.caption': 'View source & demo → GitHub',
+    'tt.s1.label': 'Overview',
+    'tt.s1.body': 'Tongue Tied is a two-player cooperative mini-game built in Python for a SUTD class project (SC08, 2022). Two players share one keyboard, control two frogs, and must navigate a river together — all while staying physically close to each other on screen. The game was designed by a team of six students as an interactive exploration of communication and coordination.',
+    'tt.s1.context.label': 'Context', 'tt.s1.context.val': 'SUTD SC08 class project, December 2022. Team of 6. Theme: use software to solve an interesting problem.',
+    'tt.s1.tech.label': 'Tech Stack', 'tt.s1.tech.val': 'Python · turtle graphics · OOP · AABB collision detection · game state machine',
+    'tt.s2.label': 'Design Goal',
+    'tt.s2.quote': 'How do you force two people to communicate — not through instructions, but through the rules of the game itself?',
+    'tt.s2.body': 'The core design question was social: many games are called "co-op" but can be played without saying a word. We wanted a mechanic where silence literally causes failure. The answer was a distance constraint — if the two frogs drift more than 60 pixels apart in either axis, movement is blocked. This makes communication the gameplay, not just a nice-to-have.',
+    'tt.s3.label': 'Gameplay',
+    'tt.s3.body': 'Both players sit at the same keyboard. Player 1 uses arrow keys; Player 2 uses WASD. Both frogs must reach the lilypad together, avoid moving logs, and survive 4 levels with shared lives. Press K to start or restart, P to quit.',
+    'tt.s3.p1': 'Player 1 · Arrow Keys', 'tt.s3.p2': 'Player 2 · WASD',
+    'tt.s3.p1.note': 'Movement is blocked if the separation from Player 2 exceeds 60px in either axis.',
+    'tt.s3.p2.note': 'Same constraint applies symmetrically — neither player can advance alone.',
+    'tt.s3.lv1.num': 'Level 1', 'tt.s3.lv1.desc': '1 long log · slow speed. Learn the controls and the distance mechanic.',
+    'tt.s3.lv2.num': 'Level 2', 'tt.s3.lv2.desc': '+1 short log · slightly faster. Coordination becomes necessary.',
+    'tt.s3.lv3.num': 'Level 3', 'tt.s3.lv3.desc': '+2 obstacles · speed increases. Talking becomes urgent.',
+    'tt.s3.lv4.num': 'Level 4', 'tt.s3.lv4.desc': '+3 fast logs. Beat this and the couple lives happily ever after.',
+    'tt.s4.label': 'What Makes It Interesting',
+    'tt.s4.i1': '<strong>The mechanic is the message.</strong> The 60px leash isn\'t just a technical rule — it encodes a social idea. You can\'t go faster than your partner, and your partner can\'t go faster than you. The rope forces empathy.',
+    'tt.s4.i2': '<strong>One keyboard, two players.</strong> Sharing input forces physical proximity, which changes the social dynamic of play. This is deliberate — the game is designed for pairs sitting together, not online.',
+    'tt.s4.i3': '<strong>Shared lives create shared stakes.</strong> Losing a life hurts both players equally. There\'s no pointing fingers — success and failure are genuinely collective.',
+    'tt.s4.i4': '<strong>The name is the concept.</strong> "Tongue Tied" — two tongues, one knot. The frog theme is playful, but the name captures what the game is really about: what happens when two people have to untie themselves together.',
+    'tt.s5.label': 'My Contribution',
+    'tt.s5.body': 'This was a 6-person team project. My contributions focused on game logic, player mechanics, and system integration.',
+    'tt.s5.c1.title': 'Player Movement Logic', 'tt.s5.c1.desc': 'Implemented the distance constraint system — the x/y separation checks that block movement when players drift too far apart.',
+    'tt.s5.c2.title': 'Collision Detection', 'tt.s5.c2.desc': 'Adapted AABB collision logic for detecting log hits and lilypad arrivals.',
+    'tt.s5.c3.title': 'Game State Machine', 'tt.s5.c3.desc': 'Built the state loop — Start, Game, Dead, Win, Quit — and wired keyboard triggers to transitions.',
+    'tt.s5.c4.title': 'Level Progression', 'tt.s5.c4.desc': 'Designed the level dictionary and obstacle speed-up system that scales difficulty across 4 levels.',
+    'tt.s6.label': 'Technical Notes',
+    'tt.s6.t1.label': 'Architecture', 'tt.s6.t1.val': 'OOP class hierarchy: Sprite → Player / Car / Goal. Each entity manages its own state, rendering, and update logic. A shared pen turtle handles all canvas drawing.',
+    'tt.s6.t2.label': 'Collision', 'tt.s6.t2.val': 'AABB (Axis-Aligned Bounding Box) — checks whether the absolute difference between two objects\' x and y coordinates falls within their combined half-widths and half-heights.',
+    'tt.s6.t3.label': 'Distance Constraint', 'tt.s6.t3.val': 'Each Player.up/down/left/right method calls far_apart_x() or far_apart_y() before moving, returning early if the signed separation exceeds ±60px.',
+    'tt.s6.t4.label': 'Game Loop', 'tt.s6.t4.val': 'Single while True loop with gamestate string ("Start" / "Game" / "Dead" / "Win" / "Quit"). wn.tracer(False) + wn.update() gives manual frame control.',
+    'tt.s6.t5.label': 'Difficulty Scaling', 'tt.s6.t5.val': 'Each Car has a base dx and an accumulated speed float. On each level-up, speed_up() increments |speed| by 0.1, making logs progressively faster.',
+    'tt.s7.label': 'Play In Browser',
+    'tt.s7.soon': 'Browser version coming soon',
+    'tt.s7.sub': 'A lightweight HTML5 canvas version preserving the same core mechanic is in progress.<br>Source code available on <a href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" style="color:rgba(180,100,255,0.7)">GitHub</a>.',
+    'tt.footer.back': '← Back to portfolio',
+  },
+  zh: {
+    'tt.eyebrow': '小游戏 · 互动游戏项目',
+    'tt.title': 'Tongue Tied',
+    'tt.sub': '一款关于团队合作与沟通的双人 Python 小游戏',
+    'tt.meta.players': '玩家', 'tt.meta.levels': '关卡', 'tt.meta.lives': '共享生命', 'tt.meta.dist': '最大间距',
+    'tt.sprite.p1': '玩家1 · 方向键', 'tt.sprite.p2': '玩家2 · WASD', 'tt.sprite.goal': '目标 · 荷叶', 'tt.sprite.log': '障碍 · 原木',
+    'tt.video.caption': '查看源码与演示 → GitHub',
+    'tt.s1.label': '项目概述',
+    'tt.s1.body': 'Tongue Tied 是一款为 SUTD SC08 课程项目开发的双人合作 Python 小游戏（2022年）。两名玩家共用一个键盘，各自操控一只青蛙，必须一起穿越河流——同时保持彼此在屏幕上的距离。这款游戏由6名学生共同设计，是对沟通与协调的一次互动探索。',
+    'tt.s1.context.label': '背景', 'tt.s1.context.val': 'SUTD SC08 课程项目，2022年12月。6人团队。主题：用软件解决一个有趣的问题。',
+    'tt.s1.tech.label': '技术栈', 'tt.s1.tech.val': 'Python · turtle 图形库 · 面向对象 · AABB 碰撞检测 · 游戏状态机',
+    'tt.s2.label': '设计目标',
+    'tt.s2.quote': '如何让两个人必须沟通——不是通过说明书，而是通过游戏规则本身？',
+    'tt.s2.body': '核心设计问题是社交性的：很多游戏号称"合作"，但实际上可以一言不发地完成。我们希望设计一个机制，让沉默直接导致失败。答案是距离约束——如果两只青蛙在任意轴上的距离超过60像素，移动就会被锁定。这让沟通本身成为了游戏玩法，而不只是锦上添花。',
+    'tt.s3.label': '游戏玩法',
+    'tt.s3.body': '两名玩家坐在同一键盘前。玩家1使用方向键，玩家2使用WASD。两只青蛙必须一起到达荷叶，躲避移动的原木，共享3条生命通过4个关卡。按K开始/重启，按P退出。',
+    'tt.s3.p1': '玩家1 · 方向键', 'tt.s3.p2': '玩家2 · WASD',
+    'tt.s3.p1.note': '若与玩家2的距离在任意轴上超过60像素，移动将被锁定。',
+    'tt.s3.p2.note': '相同约束对称适用——任何一方都无法单独前进。',
+    'tt.s3.lv1.num': '第1关', 'tt.s3.lv1.desc': '1根长原木 · 速度慢。学习操控和距离机制。',
+    'tt.s3.lv2.num': '第2关', 'tt.s3.lv2.desc': '+1根短原木 · 稍快。协调变得必要。',
+    'tt.s3.lv3.num': '第3关', 'tt.s3.lv3.desc': '+2个障碍 · 速度加快。开始需要语言沟通。',
+    'tt.s3.lv4.num': '第4关', 'tt.s3.lv4.desc': '+3根快速原木。通过此关，两只青蛙从此幸福生活。',
+    'tt.s4.label': '为什么有趣',
+    'tt.s4.i1': '<strong>机制即信息。</strong>60像素的"绳子"不只是技术规则——它编码了一个社交理念。你无法比伴侣走得更快，伴侣也无法比你走得更快。这根绳子强制产生了共情。',
+    'tt.s4.i2': '<strong>一个键盘，两个玩家。</strong>共用输入设备迫使两人在物理上靠近，改变了游戏的社交动态。这是刻意设计的——游戏为坐在一起的两人而设，不是线上游戏。',
+    'tt.s4.i3': '<strong>共享生命创造共同利害。</strong>失去一条生命对两位玩家同等有效。没有指责的余地——成功与失败是真正集体的。',
+    'tt.s4.i4': '<strong>名字即概念。</strong>"Tongue Tied"——两条舌头，一个结。青蛙主题很俏皮，但名字捕捉了游戏真正的核心：当两个人必须一起解开彼此时，会发生什么。',
+    'tt.s5.label': '我的贡献',
+    'tt.s5.body': '这是一个6人团队项目。我的贡献主要集中在游戏逻辑、玩家机制和系统集成方面。',
+    'tt.s5.c1.title': '玩家移动逻辑', 'tt.s5.c1.desc': '实现了距离约束系统——当玩家间距过大时阻断移动的x/y轴分离检测。',
+    'tt.s5.c2.title': '碰撞检测', 'tt.s5.c2.desc': '改编AABB碰撞逻辑，用于检测原木碰撞和到达荷叶的判定。',
+    'tt.s5.c3.title': '游戏状态机', 'tt.s5.c3.desc': '构建了状态循环——开始、游戏中、死亡、胜利、退出——并将键盘触发器连接到状态转换。',
+    'tt.s5.c4.title': '关卡递进', 'tt.s5.c4.desc': '设计了关卡字典和障碍加速系统，跨4个关卡逐步提升难度。',
+    'tt.s6.label': '技术笔记',
+    'tt.s6.t1.label': '架构', 'tt.s6.t1.val': 'OOP类层次：Sprite → Player / Car / Goal。每个实体管理自身的状态、渲染和更新逻辑。一个共享的pen turtle处理所有画布绘制。',
+    'tt.s6.t2.label': '碰撞检测', 'tt.s6.t2.val': 'AABB（轴对齐包围盒）——检查两个对象x、y坐标的绝对差值是否在其组合半宽和半高范围内。',
+    'tt.s6.t3.label': '距离约束', 'tt.s6.t3.val': '每个Player的移动方法在执行前调用far_apart_x()或far_apart_y()，若有符号分离超过±60px则提前返回。',
+    'tt.s6.t4.label': '游戏循环', 'tt.s6.t4.val': '单一while True循环配合gamestate字符串（"Start"/"Game"/"Dead"/"Win"/"Quit"）。wn.tracer(False)+wn.update()实现手动帧控制。',
+    'tt.s6.t5.label': '难度缩放', 'tt.s6.t5.val': '每个Car有基础dx和累积speed浮点数。每次升级时speed_up()将|speed|递增0.1，使原木逐渐加速。',
+    'tt.s7.label': '在浏览器中游玩',
+    'tt.s7.soon': '浏览器版本即将推出',
+    'tt.s7.sub': '基于相同核心机制的轻量级HTML5 Canvas版本正在开发中。<br>源代码可在 <a href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" style="color:rgba(180,100,255,0.7)">GitHub</a> 上查看。',
+    'tt.footer.back': '← 返回作品集',
+  }
+};
+
+let lang = localStorage.getItem('lang') || 'en';
+function applyLang() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = translations[lang][key];
+    if (val !== undefined) el.innerHTML = val;
+  });
+  document.getElementById('langToggle').textContent = lang === 'en' ? '中文' : 'EN';
+}
+document.getElementById('langToggle').addEventListener('click', () => {
+  lang = lang === 'en' ? 'zh' : 'en';
+  localStorage.setItem('lang', lang);
+  applyLang();
+});
+applyLang();
+</script>
+</body>
+</html>
