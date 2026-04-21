@@ -655,6 +655,7 @@ body {
 </div>
 
 <script>
+let lang = localStorage.getItem('lang') || 'en';
 const translations = {
   en: {
     'tt.eyebrow': 'Mini-game · Interactive Game Project',
@@ -701,6 +702,19 @@ const translations = {
     'tt.s7.p1': 'Player 1', 'tt.s7.p2': 'Player 2',
     'tt.s7.restart': 'K = Start / Restart',
     'tt.footer.back': '← Back to portfolio',
+    'tt.game.loading': 'Loading sprites...',
+    'tt.game.start.title': 'TONGUE TIED',
+    'tt.game.start.sub': 'Click or press K to start',
+    'tt.game.start.hint': 'WASD + Arrow Keys · Stay close · Reach the lilypad',
+    'tt.game.dead.title': 'GAME OVER',
+    'tt.game.dead.sub': 'The couple has parted ways...',
+    'tt.game.dead.hint': 'Click or press K to restart',
+    'tt.game.win.title': 'YOU WIN!',
+    'tt.game.win.sub': 'The couple lives happily ever after!',
+    'tt.game.win.hint': 'Click or press K to play again',
+    'tt.game.hud.lives': 'LIVES',
+    'tt.game.hud.level': 'LEVEL',
+    'tt.game.hud.time': 'TIME',
   },
   zh: {
     'tt.eyebrow': '小游戏 · 互动游戏项目',
@@ -747,6 +761,19 @@ const translations = {
     'tt.s7.p1': '玩家1', 'tt.s7.p2': '玩家2',
     'tt.s7.restart': 'K = 开始 / 重启',
     'tt.footer.back': '← 返回作品集',
+    'tt.game.loading': '正在加载素材...',
+    'tt.game.start.title': 'TONGUE TIED',
+    'tt.game.start.sub': '点击画布或按 K 开始',
+    'tt.game.start.hint': 'WASD + 方向键 · 保持靠近 · 一起到达荷叶',
+    'tt.game.dead.title': '游戏结束',
+    'tt.game.dead.sub': '这对青蛙暂时走散了...',
+    'tt.game.dead.hint': '点击画布或按 K 重新开始',
+    'tt.game.win.title': '你们赢了！',
+    'tt.game.win.sub': '这对青蛙从此幸福地生活在一起！',
+    'tt.game.win.hint': '点击画布或按 K 再玩一次',
+    'tt.game.hud.lives': '生命',
+    'tt.game.hud.level': '关卡',
+    'tt.game.hud.time': '时间',
   }
 };
 
@@ -767,14 +794,21 @@ const translations = {
   const SPRITE_W = 32, SPRITE_H = 32;
 
   // ── Sprite loading ──
-  const BASE = 'https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/';
+  const BASE = 'CTDProject-main/';
   const img = {};
   let loaded = 0, total = 0;
+  function settleSpriteLoad() {
+    loaded++;
+    if (loaded === total && gameState === 'idle') {
+      gameState = 'start';
+      draw();
+    }
+  }
   function loadImg(key, src) {
     total++;
-    const i = new Image(); i.crossOrigin = 'anonymous';
-    i.onload = () => { loaded++; if (loaded === total && gameState === 'idle') { gameState = 'start'; draw(); } };
-    i.onerror = () => { loaded++; };
+    const i = new Image();
+    i.onload = settleSpriteLoad;
+    i.onerror = settleSpriteLoad;
     i.src = src; img[key] = i;
   }
   loadImg('p1',      BASE + 'player1.gif');
@@ -863,6 +897,9 @@ const translations = {
     if (gameState === 'start' || gameState === 'dead' || gameState === 'win') startGame();
     else if (gameState === 'idle') { /* wait for images */ }
     canvas.focus();
+  });
+  canvas.addEventListener('tongue-tied:lang-change', () => {
+    draw();
   });
   canvas.setAttribute('tabindex', '0');
 
@@ -1004,10 +1041,10 @@ const translations = {
     drawHUD();
 
     // Overlays
-    if (gameState === 'idle') drawOverlay('Loading sprites...', '', '');
-    else if (gameState === 'start') drawOverlay('TONGUE TIED', 'Click or press K to start', 'WASD + Arrow Keys · Stay close · Reach the lilypad');
-    else if (gameState === 'dead') drawOverlay('GAME OVER', 'The couple has parted ways...', 'Click or press K to restart');
-    else if (gameState === 'win') drawOverlay('YOU WIN!', 'The couple lives happily ever after!', 'Click or press K to play again');
+    if (gameState === 'idle') drawOverlay(t('tt.game.loading'), '', '');
+    else if (gameState === 'start') drawOverlay(t('tt.game.start.title'), t('tt.game.start.sub'), t('tt.game.start.hint'));
+    else if (gameState === 'dead') drawOverlay(t('tt.game.dead.title'), t('tt.game.dead.sub'), t('tt.game.dead.hint'));
+    else if (gameState === 'win') drawOverlay(t('tt.game.win.title'), t('tt.game.win.sub'), t('tt.game.win.hint'));
   }
 
   function drawPlayer(p, key, inGoal) {
@@ -1042,7 +1079,7 @@ const translations = {
     ctx.fillStyle = '#00f5c4';
     ctx.font = '600 13px "Rajdhani", monospace';
     ctx.letterSpacing = '0.06em';
-    ctx.fillText('LIVES', 20, 22);
+    ctx.fillText(t('tt.game.hud.lives'), 20, 22);
     for (let i = 0; i < 3; i++) {
       ctx.fillStyle = i < lives ? '#00f5c4' : 'rgba(255,255,255,0.12)';
       ctx.beginPath();
@@ -1054,7 +1091,7 @@ const translations = {
     ctx.fillStyle = '#b464ff';
     ctx.font = '600 13px "Rajdhani", monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('LEVEL', W/2, 22);
+    ctx.fillText(t('tt.game.hud.level'), W/2, 22);
     ctx.font = '700 22px "Orbitron", monospace';
     ctx.fillStyle = '#fff';
     ctx.fillText(level, W/2, 46);
@@ -1064,7 +1101,7 @@ const translations = {
     ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.font = '600 13px "Rajdhani", monospace';
     ctx.textAlign = 'right';
-    ctx.fillText('TIME', W - 20, 22);
+    ctx.fillText(t('tt.game.hud.time'), W - 20, 22);
     ctx.fillStyle = '#fff';
     ctx.font = '700 20px "Orbitron", monospace';
     ctx.fillText(Math.floor(elapsed) + 's', W - 20, 46);
@@ -1109,6 +1146,11 @@ const translations = {
     ctx.textAlign = 'left';
   }
 
+  function t(key) {
+    return (translations[lang] && translations[lang][key]) || translations.en[key] || key;
+  }
+
+  initGame();
   // Initial draw
   draw();
   // Section id for scroll
@@ -1118,14 +1160,24 @@ const translations = {
   })();
 })();
 
-let lang = localStorage.getItem('lang') || 'en';
 function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const val = translations[lang][key];
     if (val !== undefined) el.innerHTML = val;
   });
-  document.getElementById('langToggle').textContent = lang === 'en' ? '中文' : 'EN';
+  document.getElementById('langToggle').textContent = lang === 'en' ? '中文' : 'English';
+  document.documentElement.lang = lang === 'en' ? 'en' : 'zh';
+  if (document.title) {
+    document.title = lang === 'en' ? 'Tongue Tied · Mini-game' : 'Tongue Tied · 双人小游戏';
+  }
+  if (typeof window !== 'undefined') {
+    const canvas = document.getElementById('gameCanvas');
+    if (canvas) {
+      const event = new Event('tongue-tied:lang-change');
+      canvas.dispatchEvent(event);
+    }
+  }
 }
 document.getElementById('langToggle').addEventListener('click', () => {
   lang = lang === 'en' ? 'zh' : 'en';
