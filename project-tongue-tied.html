@@ -280,17 +280,52 @@ body {
 .tech-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(0,245,196,0.7); font-family: 'Rajdhani', sans-serif; width: 140px; flex-shrink: 0; padding-top: 1px; }
 .tech-val { font-size: 13px; color: rgba(255,255,255,0.6); line-height: 1.6; font-family: ui-monospace, sans-serif; }
 
-/* ── Game placeholder ── */
-.game-placeholder {
-  border: 1px dashed rgba(180,100,255,0.25);
-  border-radius: 12px;
-  padding: 48px;
-  text-align: center;
-  background: rgba(180,100,255,0.03);
-  margin-top: 8px;
+/* ── Hero Play CTA ── */
+.hero-play-cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  margin-top: 28px;
+  padding: 14px 28px; border-radius: 999px;
+  background: linear-gradient(135deg, rgba(180,100,255,0.9), rgba(120,60,220,0.9));
+  color: #fff; font-family: 'Orbitron', sans-serif; font-size: 13px;
+  letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none;
+  border: 1px solid rgba(180,100,255,0.5);
+  box-shadow: 0 0 24px rgba(180,100,255,0.35), 0 0 48px rgba(180,100,255,0.12);
+  transition: box-shadow .3s, transform .2s;
+  cursor: pointer;
 }
-.game-placeholder-title { font-family: 'Orbitron', sans-serif; font-size: 16px; color: rgba(180,100,255,0.7); margin-bottom: 10px; }
-.game-placeholder-sub { font-size: 13px; color: rgba(255,255,255,0.35); font-family: ui-monospace, sans-serif; line-height: 1.6; }
+.hero-play-cta:hover { box-shadow: 0 0 36px rgba(180,100,255,0.55), 0 0 64px rgba(180,100,255,0.2); transform: translateY(-2px); }
+.hero-play-cta .cta-pulse {
+  width: 8px; height: 8px; border-radius: 50%; background: #fff;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+
+/* ── Game canvas section ── */
+.game-wrap {
+  margin-top: 8px; display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.game-canvas-outer {
+  position: relative; width: 100%; max-width: 600px;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(180,100,255,0.25);
+  box-shadow: 0 0 40px rgba(180,100,255,0.12);
+}
+#gameCanvas { display: block; width: 100%; height: auto; cursor: pointer; }
+.game-hint {
+  display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
+}
+.game-hint-item {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  font-family: ui-monospace, sans-serif;
+}
+.game-hint-keys { display: flex; gap: 3px; }
+.game-hint-key {
+  padding: 2px 6px; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.15);
+  background: rgba(255,255,255,0.05);
+  font-size: 10px; font-family: ui-monospace, sans-serif; color: rgba(255,255,255,0.6);
+}
 
 /* ── Footer ── */
 .page-footer {
@@ -351,6 +386,10 @@ body {
         <span class="hero-stat-key" data-i18n="tt.meta.dist">Max Separation</span>
       </div>
     </div>
+    <a class="hero-play-cta" href="#play-section" onclick="document.getElementById('play-section').scrollIntoView({behavior:'smooth'});return false;">
+      <span class="cta-pulse"></span>
+      <span data-i18n="tt.cta">▶ PLAY IN BROWSER</span>
+    </a>
   </div>
 
   <!-- ── Visual strip: sprites + video link ── -->
@@ -578,16 +617,32 @@ body {
     </div>
   </div>
 
-  <!-- ── Browser Game (placeholder) ── -->
-  <div class="section">
+  <!-- ── Browser Game ── -->
+  <div class="section" id="play-section">
     <div class="section-header">
       <span class="section-num">07</span>
       <span class="section-label" style="color:rgba(180,100,255,0.72)" data-i18n="tt.s7.label">Play In Browser</span>
       <div class="section-line"></div>
     </div>
-    <div class="game-placeholder" id="game-placeholder">
-      <div class="game-placeholder-title" data-i18n="tt.s7.soon">Browser version coming soon</div>
-      <p class="game-placeholder-sub" data-i18n="tt.s7.sub">A lightweight HTML5 canvas version preserving the same core mechanic is in progress.<br>Source code available on <a href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" style="color:rgba(180,100,255,0.7)">GitHub</a>.</p>
+    <div class="game-wrap">
+      <div class="game-canvas-outer">
+        <canvas id="gameCanvas" width="600" height="700"></canvas>
+      </div>
+      <div class="game-hint">
+        <div class="game-hint-item">
+          <span style="color:rgba(0,245,196,0.7)" data-i18n="tt.s7.p1">Player 1</span>
+          <div class="game-hint-keys">
+            <span class="game-hint-key">↑</span><span class="game-hint-key">↓</span><span class="game-hint-key">←</span><span class="game-hint-key">→</span>
+          </div>
+        </div>
+        <div class="game-hint-item">
+          <span style="color:rgba(180,100,255,0.7)" data-i18n="tt.s7.p2">Player 2</span>
+          <div class="game-hint-keys">
+            <span class="game-hint-key">W</span><span class="game-hint-key">A</span><span class="game-hint-key">S</span><span class="game-hint-key">D</span>
+          </div>
+        </div>
+        <div class="game-hint-item" data-i18n="tt.s7.restart">K = Start / Restart</div>
+      </div>
     </div>
   </div>
 
@@ -641,9 +696,10 @@ const translations = {
     'tt.s6.t3.label': 'Distance Constraint', 'tt.s6.t3.val': 'Each Player.up/down/left/right method calls far_apart_x() or far_apart_y() before moving, returning early if the signed separation exceeds ±60px.',
     'tt.s6.t4.label': 'Game Loop', 'tt.s6.t4.val': 'Single while True loop with gamestate string ("Start" / "Game" / "Dead" / "Win" / "Quit"). wn.tracer(False) + wn.update() gives manual frame control.',
     'tt.s6.t5.label': 'Difficulty Scaling', 'tt.s6.t5.val': 'Each Car has a base dx and an accumulated speed float. On each level-up, speed_up() increments |speed| by 0.1, making logs progressively faster.',
+    'tt.cta': '▶ PLAY IN BROWSER',
     'tt.s7.label': 'Play In Browser',
-    'tt.s7.soon': 'Browser version coming soon',
-    'tt.s7.sub': 'A lightweight HTML5 canvas version preserving the same core mechanic is in progress.<br>Source code available on <a href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" style="color:rgba(180,100,255,0.7)">GitHub</a>.',
+    'tt.s7.p1': 'Player 1', 'tt.s7.p2': 'Player 2',
+    'tt.s7.restart': 'K = Start / Restart',
     'tt.footer.back': '← Back to portfolio',
   },
   zh: {
@@ -686,12 +742,381 @@ const translations = {
     'tt.s6.t3.label': '距离约束', 'tt.s6.t3.val': '每个Player的移动方法在执行前调用far_apart_x()或far_apart_y()，若有符号分离超过±60px则提前返回。',
     'tt.s6.t4.label': '游戏循环', 'tt.s6.t4.val': '单一while True循环配合gamestate字符串（"Start"/"Game"/"Dead"/"Win"/"Quit"）。wn.tracer(False)+wn.update()实现手动帧控制。',
     'tt.s6.t5.label': '难度缩放', 'tt.s6.t5.val': '每个Car有基础dx和累积speed浮点数。每次升级时speed_up()将|speed|递增0.1，使原木逐渐加速。',
+    'tt.cta': '▶ 在浏览器中游玩',
     'tt.s7.label': '在浏览器中游玩',
-    'tt.s7.soon': '浏览器版本即将推出',
-    'tt.s7.sub': '基于相同核心机制的轻量级HTML5 Canvas版本正在开发中。<br>源代码可在 <a href="https://github.com/Yangqiruisutd/CTD-Project" target="_blank" style="color:rgba(180,100,255,0.7)">GitHub</a> 上查看。',
+    'tt.s7.p1': '玩家1', 'tt.s7.p2': '玩家2',
+    'tt.s7.restart': 'K = 开始 / 重启',
     'tt.footer.back': '← 返回作品集',
   }
 };
+
+/* ════════════════════════════════════════
+   TONGUE TIED — Browser Game
+   ════════════════════════════════════════ */
+(function() {
+  const canvas = document.getElementById('gameCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = 600, H = 700;
+
+  // ── Layout constants ──
+  const HUD_H = 54;
+  const GOAL_Y = HUD_H + 10, GOAL_H = 60;
+  const SAFE_Y = 530;
+  const STEP = 30;
+  const MAX_DIST = 60;
+  const SPRITE_W = 32, SPRITE_H = 32;
+
+  // ── Sprite loading ──
+  const BASE = 'https://raw.githubusercontent.com/Yangqiruisutd/CTD-Project/main/';
+  const img = {};
+  let loaded = 0, total = 0;
+  function loadImg(key, src) {
+    total++;
+    const i = new Image(); i.crossOrigin = 'anonymous';
+    i.onload = () => { loaded++; if (loaded === total && gameState === 'idle') { gameState = 'start'; draw(); } };
+    i.onerror = () => { loaded++; };
+    i.src = src; img[key] = i;
+  }
+  loadImg('p1',      BASE + 'player1.gif');
+  loadImg('p2',      BASE + 'player2.gif');
+  loadImg('lilypad', BASE + 'lilypad.gif');
+  loadImg('log',     BASE + 'log.gif');
+  loadImg('longlog', BASE + 'longlog.gif');
+  loadImg('bg',      BASE + 'watersprite_huge.gif');
+
+  // ── Level config: each entry = one log added that level ──
+  const LEVEL_DEFS = [
+    { y: 450, w: 90, h: 28, spd: -1.8, sprite: 'longlog', x: 80  },
+    { y: 340, w: 60, h: 28, spd:  2.4, sprite: 'log',     x: 400 },
+    { y: 240, w: 60, h: 28, spd: -3.1, sprite: 'log',     x: 200 },
+    { y: 155, w: 90, h: 28, spd:  3.8, sprite: 'longlog', x: 300 },
+  ];
+
+  // ── State ──
+  let gameState = 'idle'; // idle | start | playing | dead | win
+  let lives, level, elapsed, lastTs, rafId;
+  let p1, p2, logs, goalP1, goalP2;
+
+  function initGame() {
+    lives = 3; level = 1; elapsed = 0; lastTs = null;
+    p1 = { x: 255, y: 625, inGoal: false };
+    p2 = { x: 315, y: 625, inGoal: false };
+    goalP1 = false; goalP2 = false;
+    buildLogs();
+  }
+
+  function buildLogs() {
+    logs = [];
+    for (let i = 0; i < level; i++) {
+      const d = LEVEL_DEFS[i];
+      const speedBoost = (level - 1 - i) * 0.4;
+      const spd = d.spd > 0 ? d.spd + speedBoost : d.spd - speedBoost;
+      logs.push({ x: d.x, y: d.y, w: d.w, h: d.h, spd, sprite: d.sprite });
+    }
+  }
+
+  function resetPositions() {
+    p1.x = 255; p1.y = 625; p1.inGoal = false;
+    p2.x = 315; p2.y = 625; p2.inGoal = false;
+    goalP1 = false; goalP2 = false;
+  }
+
+  // ── Input ──
+  const keyDown = {};
+  const lastKeyTime = {};
+  const KEY_THROTTLE = 130; // ms between repeats
+
+  function onKey(e) {
+    const k = e.key;
+    const now = performance.now();
+    if (lastKeyTime[k] && now - lastKeyTime[k] < KEY_THROTTLE) return;
+    lastKeyTime[k] = now;
+
+    if (gameState === 'start' || gameState === 'dead' || gameState === 'win') {
+      if (k === 'k' || k === 'K') { startGame(); return; }
+    }
+    if (gameState !== 'playing') return;
+
+    // prevent page scroll
+    if (['ArrowUp','ArrowDown','ArrowLeft','ArrowRight',' '].includes(k)) e.preventDefault();
+
+    const moves = {
+      'ArrowUp':    () => move(p1, p2,  0, -STEP),
+      'ArrowDown':  () => move(p1, p2,  0,  STEP),
+      'ArrowLeft':  () => move(p1, p2, -STEP, 0),
+      'ArrowRight': () => move(p1, p2,  STEP, 0),
+      'w': () => move(p2, p1,  0, -STEP),
+      'W': () => move(p2, p1,  0, -STEP),
+      's': () => move(p2, p1,  0,  STEP),
+      'S': () => move(p2, p1,  0,  STEP),
+      'a': () => move(p2, p1, -STEP, 0),
+      'A': () => move(p2, p1, -STEP, 0),
+      'd': () => move(p2, p1,  STEP, 0),
+      'D': () => move(p2, p1,  STEP, 0),
+    };
+    if (moves[k]) moves[k]();
+  }
+  document.addEventListener('keydown', onKey);
+
+  // Click canvas when on start/dead/win to start
+  canvas.addEventListener('click', () => {
+    if (gameState === 'start' || gameState === 'dead' || gameState === 'win') startGame();
+    else if (gameState === 'idle') { /* wait for images */ }
+    canvas.focus();
+  });
+  canvas.setAttribute('tabindex', '0');
+
+  function move(player, other, dx, dy) {
+    if (player.inGoal) return;
+    const nx = player.x + dx;
+    const ny = player.y + dy;
+    if (Math.abs(nx - other.x) > MAX_DIST) return;
+    if (Math.abs(ny - other.y) > MAX_DIST) return;
+    if (nx < 0 || nx > W - SPRITE_W || ny < HUD_H || ny > H - SPRITE_H) return;
+    player.x = nx; player.y = ny;
+  }
+
+  // ── Game loop ──
+  function startGame() {
+    if (gameState === 'dead' || gameState === 'win') initGame();
+    gameState = 'playing';
+    lastTs = null;
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function loop(ts) {
+    if (!lastTs) lastTs = ts;
+    const dt = Math.min(ts - lastTs, 50);
+    lastTs = ts;
+    elapsed += dt / 1000;
+
+    // move logs
+    for (const log of logs) {
+      log.x += log.spd * dt * 0.06;
+      if (log.x > W + 10) log.x = -log.w - 10;
+      if (log.x < -log.w - 10) log.x = W + 10;
+    }
+
+    checkCollisions();
+    draw();
+
+    if (gameState === 'playing') rafId = requestAnimationFrame(loop);
+  }
+
+  function aabb(ax, ay, aw, ah, bx, by, bw, bh) {
+    return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
+  }
+
+  function checkCollisions() {
+    // Goal collision
+    const gx = W/2 - 30, gy = GOAL_Y;
+    const gw = 60, gh = GOAL_H;
+    if (!goalP1 && aabb(p1.x, p1.y, SPRITE_W, SPRITE_H, gx, gy, gw, gh)) {
+      goalP1 = true; p1.inGoal = true;
+    }
+    if (!goalP2 && aabb(p2.x, p2.y, SPRITE_W, SPRITE_H, gx, gy, gw, gh)) {
+      goalP2 = true; p2.inGoal = true;
+    }
+    if (goalP1 && goalP2) {
+      if (level >= LEVEL_DEFS.length) { gameState = 'win'; draw(); return; }
+      level++;
+      buildLogs();
+      resetPositions();
+      return;
+    }
+
+    // Log collision
+    for (const log of logs) {
+      if (aabb(p1.x+4, p1.y+4, SPRITE_W-8, SPRITE_H-8, log.x, log.y, log.w, log.h) ||
+          aabb(p2.x+4, p2.y+4, SPRITE_W-8, SPRITE_H-8, log.x, log.y, log.w, log.h)) {
+        lives--;
+        resetPositions();
+        if (lives <= 0) { gameState = 'dead'; draw(); return; }
+        break;
+      }
+    }
+  }
+
+  // ── Drawing ──
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Background river
+    if (img.bg.complete && img.bg.naturalWidth) {
+      ctx.globalAlpha = 0.55;
+      ctx.drawImage(img.bg, 0, HUD_H, W, H - HUD_H);
+      ctx.globalAlpha = 1;
+    } else {
+      ctx.fillStyle = '#0a1628';
+      ctx.fillRect(0, HUD_H, W, H - HUD_H);
+    }
+
+    // Dark overlay for readability
+    ctx.fillStyle = 'rgba(5,8,18,0.45)';
+    ctx.fillRect(0, HUD_H, W, H - HUD_H);
+
+    // Safe zone
+    ctx.fillStyle = 'rgba(0,245,196,0.06)';
+    ctx.fillRect(0, SAFE_Y, W, H - SAFE_Y);
+    ctx.strokeStyle = 'rgba(0,245,196,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, SAFE_Y); ctx.lineTo(W, SAFE_Y); ctx.stroke();
+
+    // Goal zone
+    ctx.fillStyle = 'rgba(0,245,196,0.08)';
+    ctx.fillRect(0, GOAL_Y - 4, W, GOAL_H + 14);
+    ctx.strokeStyle = 'rgba(0,245,196,0.2)';
+    ctx.beginPath(); ctx.moveTo(0, GOAL_Y + GOAL_H + 10); ctx.lineTo(W, GOAL_Y + GOAL_H + 10); ctx.stroke();
+
+    // Lilypad
+    const gx = W/2 - 30, gy = GOAL_Y;
+    if (img.lilypad.complete && img.lilypad.naturalWidth) {
+      ctx.drawImage(img.lilypad, gx, gy, 60, 60);
+    } else {
+      ctx.fillStyle = '#00f5c4'; ctx.fillRect(gx, gy, 60, 60);
+    }
+
+    // Logs
+    for (const log of logs) {
+      if (img[log.sprite] && img[log.sprite].complete && img[log.sprite].naturalWidth) {
+        ctx.drawImage(img[log.sprite], log.x, log.y - 4, log.w, log.h + 8);
+      } else {
+        ctx.fillStyle = '#8B4513'; ctx.fillRect(log.x, log.y, log.w, log.h);
+      }
+    }
+
+    // Rope between players
+    ctx.strokeStyle = goalP1 && goalP2 ? '#00f5c4' : 'rgba(255,100,150,0.7)';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 4]);
+    ctx.beginPath();
+    ctx.moveTo(p1.x + SPRITE_W/2, p1.y + SPRITE_H/2);
+    ctx.lineTo(p2.x + SPRITE_W/2, p2.y + SPRITE_H/2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Players
+    drawPlayer(p1, 'p1', goalP1);
+    drawPlayer(p2, 'p2', goalP2);
+
+    // HUD
+    drawHUD();
+
+    // Overlays
+    if (gameState === 'idle') drawOverlay('Loading sprites...', '', '');
+    else if (gameState === 'start') drawOverlay('TONGUE TIED', 'Click or press K to start', 'WASD + Arrow Keys · Stay close · Reach the lilypad');
+    else if (gameState === 'dead') drawOverlay('GAME OVER', 'The couple has parted ways...', 'Click or press K to restart');
+    else if (gameState === 'win') drawOverlay('YOU WIN!', 'The couple lives happily ever after!', 'Click or press K to play again');
+  }
+
+  function drawPlayer(p, key, inGoal) {
+    ctx.save();
+    if (inGoal) { ctx.globalAlpha = 0.5; }
+    if (img[key].complete && img[key].naturalWidth) {
+      ctx.drawImage(img[key], p.x, p.y, SPRITE_W, SPRITE_H);
+    } else {
+      ctx.fillStyle = key === 'p1' ? '#00f5c4' : '#b464ff';
+      ctx.fillRect(p.x, p.y, SPRITE_W, SPRITE_H);
+    }
+    ctx.restore();
+    // glow
+    ctx.save();
+    ctx.shadowColor = key === 'p1' ? '#00f5c4' : '#b464ff';
+    ctx.shadowBlur = 14;
+    ctx.strokeStyle = key === 'p1' ? 'rgba(0,245,196,0.6)' : 'rgba(180,100,255,0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(p.x - 1, p.y - 1, SPRITE_W + 2, SPRITE_H + 2);
+    ctx.restore();
+  }
+
+  function drawHUD() {
+    // HUD bar
+    ctx.fillStyle = 'rgba(8,10,18,0.92)';
+    ctx.fillRect(0, 0, W, HUD_H);
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, HUD_H); ctx.lineTo(W, HUD_H); ctx.stroke();
+
+    // Lives
+    ctx.fillStyle = '#00f5c4';
+    ctx.font = '600 13px "Rajdhani", monospace';
+    ctx.letterSpacing = '0.06em';
+    ctx.fillText('LIVES', 20, 22);
+    for (let i = 0; i < 3; i++) {
+      ctx.fillStyle = i < lives ? '#00f5c4' : 'rgba(255,255,255,0.12)';
+      ctx.beginPath();
+      ctx.arc(20 + i * 22, 40, 7, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // Level
+    ctx.fillStyle = '#b464ff';
+    ctx.font = '600 13px "Rajdhani", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('LEVEL', W/2, 22);
+    ctx.font = '700 22px "Orbitron", monospace';
+    ctx.fillStyle = '#fff';
+    ctx.fillText(level, W/2, 46);
+    ctx.textAlign = 'left';
+
+    // Timer
+    ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.font = '600 13px "Rajdhani", monospace';
+    ctx.textAlign = 'right';
+    ctx.fillText('TIME', W - 20, 22);
+    ctx.fillStyle = '#fff';
+    ctx.font = '700 20px "Orbitron", monospace';
+    ctx.fillText(Math.floor(elapsed) + 's', W - 20, 46);
+    ctx.textAlign = 'left';
+  }
+
+  function drawOverlay(title, sub, hint) {
+    ctx.fillStyle = 'rgba(5,7,16,0.82)';
+    ctx.fillRect(0, 0, W, H);
+
+    // Pixel frogs decoration
+    if (img.p1.complete && img.p2.complete) {
+      ctx.drawImage(img.p1, W/2 - 52, H/2 - 90, 40, 40);
+      ctx.drawImage(img.p2, W/2 + 12, H/2 - 90, 40, 40);
+    }
+
+    ctx.textAlign = 'center';
+    // Title
+    ctx.shadowColor = '#b464ff'; ctx.shadowBlur = 24;
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 36px "Orbitron", monospace';
+    ctx.fillText(title, W/2, H/2 - 20);
+    ctx.shadowBlur = 0;
+
+    if (sub) {
+      ctx.fillStyle = 'rgba(180,100,255,0.9)';
+      ctx.font = '500 15px ui-monospace, monospace';
+      ctx.fillText(sub, W/2, H/2 + 20);
+    }
+    if (hint) {
+      ctx.fillStyle = 'rgba(255,255,255,0.35)';
+      ctx.font = '12px ui-monospace, monospace';
+      ctx.fillText(hint, W/2, H/2 + 52);
+    }
+
+    // Lilypad at top hint
+    if (gameState === 'start' && img.lilypad.complete) {
+      ctx.globalAlpha = 0.6;
+      ctx.drawImage(img.lilypad, W/2 - 20, H/2 + 75, 40, 40);
+      ctx.globalAlpha = 1;
+    }
+    ctx.textAlign = 'left';
+  }
+
+  // Initial draw
+  draw();
+  // Section id for scroll
+  document.getElementById('play-section') || (() => {
+    const s = document.querySelector('.section:last-of-type');
+    if (s) s.id = 'play-section';
+  })();
+})();
 
 let lang = localStorage.getItem('lang') || 'en';
 function applyLang() {
